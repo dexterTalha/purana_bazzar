@@ -1,4 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:purana_bazzar/helper/shared_pref.dart';
+import 'package:purana_bazzar/screens/login_screen.dart';
+import 'package:purana_bazzar/screens/walkthrough_screen.dart';
+import 'package:purana_bazzar/utils/fancy_background_app.dart';
 import 'package:purana_bazzar/utils/constants.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -17,13 +23,27 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     _animationController = AnimationController(
       vsync: this,
       duration: Duration(
-        milliseconds: 300
+        milliseconds: 400
       ),
     );
     _animation = _animationController.drive(Tween<double>(begin: 1.5, end: 1.0));
     _animationFade = _animationController.drive(Tween<double>(begin: 0.1, end: 1.0));
     _animationSlide = _animationController.drive(Tween<Offset>(begin: Offset(0, 0.5), end: Offset.zero));
     _animationController.forward();
+    handlerTimer();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  Future<void> handlerTimer() async{
+    bool isOld = await SharedPref().isOld();
+    Timer(Duration(milliseconds: 1500), (){
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => isOld ? FancyBackgroundApp(child: LoginScreen(),):WalkThroughScreen()));
+    });
   }
 
   @override
