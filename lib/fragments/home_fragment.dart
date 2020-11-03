@@ -17,10 +17,46 @@ class _HomeFragmentState extends State<HomeFragment> {
       children: [
         AdSliderBlock(),
         Padding(
-          padding: const EdgeInsets.only(top: 30.0, left: 20),
-          child: Text(
-            "Menu",
-            style: splashTextStyle22.copyWith(color: Colors.black, fontSize: 20),
+          padding: const EdgeInsets.only(top: 30, left: 20),
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 15),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Expanded(
+                  child: Text(
+                    "Menu",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                /*InkWell(
+                  onTap: (){},
+                  child: Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: Text(
+                      "View All >",
+                      textAlign: TextAlign.end,
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: Color.fromRGBO(209, 2, 99, 1),
+                      ),
+                    ),
+                  ),
+                ),*/
+              ],
+            ),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                stops: [0.015, 0.015],
+                colors: [
+                  Color.fromRGBO(209, 2, 99, 1),
+                  Colors.white
+                ],
+              ),
+            ),
           ),
         ),
         Padding(
@@ -34,10 +70,46 @@ class _HomeFragmentState extends State<HomeFragment> {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.only(top: 30.0, left: 20),
-          child: Text(
-            "Trending Ads",
-            style: splashTextStyle22.copyWith(color: Colors.black, fontSize: 20),
+          padding: const EdgeInsets.only(top: 30, left: 20),
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 15),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Expanded(
+                  child: Text(
+                    "Trending!",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                InkWell(
+                  onTap: (){},
+                  child: Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: Text(
+                      "View All >",
+                      textAlign: TextAlign.end,
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: Color.fromRGBO(209, 2, 99, 1),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                stops: [0.015, 0.015],
+                colors: [
+                  Color.fromRGBO(209, 2, 99, 1),
+                  Colors.white
+                ],
+              ),
+            ),
           ),
         ),
         Container(
@@ -46,10 +118,10 @@ class _HomeFragmentState extends State<HomeFragment> {
             scrollDirection: Axis.horizontal,
             physics: BouncingScrollPhysics(),
             children: [
-              AdViewBlock(),
-              AdViewBlock(),
-              AdViewBlock(),
-              AdViewBlock(),
+              AdViewBlock(id: 1),
+              AdViewBlock(id: 2),
+              AdViewBlock(id: 3),
+              AdViewBlock(id: 4),
             ],
           ),
         )

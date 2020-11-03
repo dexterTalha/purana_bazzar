@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:purana_bazzar/fragments/home_fragment.dart';
+import 'package:purana_bazzar/fragments/message_fragment.dart';
+import 'package:purana_bazzar/fragments/profile_fragment.dart';
 import 'package:purana_bazzar/utils/ad_slider.dart';
 import 'package:purana_bazzar/utils/category_block.dart';
 import 'package:purana_bazzar/utils/constants.dart';
@@ -12,31 +14,51 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+
+  int _currentPage = 0;
+  final pages = [
+    HomeFragment(),
+    MessageFragment(),
+    HomeFragment(),
+    MessageFragment(),
+    ProfileFragment(),
+  ];
+  final titles = [
+    "Home",
+    "Messages",
+    "",
+    "My Ads",
+    "My Profile"
+  ];
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: TopSearchBar(
+        backgroundColor: _currentPage == 0?mPrimaryColor:Colors.white,
+        title: _currentPage!=0 ? Text(titles[_currentPage], style: googleBtnTextStyle,) : TopSearchBar(
           onSearchTap: () {
             Fluttertoast.showToast(msg: "search");
           },
         ),
-        actions: [
-          IconButton(
+
+        centerTitle: _currentPage != 0,
+        actions: _currentPage == 0?[
+         /* IconButton(
               icon: Icon(
                 Icons.messenger,
                 color: Colors.white,
               ),
-              onPressed: () {}),
+              onPressed: () {}),*/
           IconButton(
               icon: Icon(
                 Icons.notifications,
                 color: Colors.white,
               ),
               onPressed: () {})
-        ],
+        ]:[],
       ),
       bottomNavigationBar: BottomAppBar(
         shape: CircularNotchedRectangle(),
@@ -50,6 +72,14 @@ class _HomeScreenState extends State<HomeScreen> {
           showUnselectedLabels: false,
           showSelectedLabels: false,
           type: BottomNavigationBarType.fixed,
+          currentIndex: _currentPage,
+          onTap: (index){
+            if(index != 2) {
+              setState(() {
+                _currentPage = index;
+              });
+            }
+          },
           items: [
             BottomNavigationBarItem(
               label: "Home",
@@ -63,7 +93,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 Icons.message,
               ),
             ),
-            BottomNavigationBarItem(label: "Messages", icon: Container()),
+            BottomNavigationBarItem(label: "", icon: Container(
+
+            )),
             BottomNavigationBarItem(
               label: "Ads",
               icon: Icon(
@@ -90,7 +122,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Container(
         height: size.height,
         width: size.width,
-        child: HomeFragment(),
+        child: pages[_currentPage],
       ),
     );
   }

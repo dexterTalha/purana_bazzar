@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:purana_bazzar/helper/dark_theme_provider.dart';
 import 'package:purana_bazzar/helper/shared_pref.dart';
 import 'package:purana_bazzar/screens/login_screen.dart';
 import 'package:purana_bazzar/screens/walkthrough_screen.dart';
@@ -16,10 +17,17 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   AnimationController _animationController;
   Animation<double> _animation, _animationFade;
   Animation<Offset> _animationSlide;
+  DarkThemeProvider themeChangeProvider = new DarkThemeProvider();
+
+  void getCurrentAppTheme() async {
+    themeChangeProvider.darkTheme =
+    await themeChangeProvider.darkThemePreference.getTheme();
+  }
 
   @override
   void initState() {
     super.initState();
+    getCurrentAppTheme();
     _animationController = AnimationController(
       vsync: this,
       duration: Duration(
