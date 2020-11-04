@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:purana_bazzar/fragments/home_fragment.dart';
 import 'package:purana_bazzar/fragments/message_fragment.dart';
+import 'package:purana_bazzar/fragments/my_ads_fragment.dart';
 import 'package:purana_bazzar/fragments/profile_fragment.dart';
 import 'package:purana_bazzar/utils/ad_slider.dart';
 import 'package:purana_bazzar/utils/category_block.dart';
@@ -20,7 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
     HomeFragment(),
     MessageFragment(),
     HomeFragment(),
-    MessageFragment(),
+    MyAdsFragment(),
     ProfileFragment(),
   ];
   final titles = [

@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:purana_bazzar/fragments/messages/all_messages.dart';
-import 'package:purana_bazzar/fragments/messages/buying_message.dart';
-import 'package:purana_bazzar/fragments/messages/selling_message.dart';
+import 'package:purana_bazzar/fragments/ads/favourite_ads.dart';
+import 'package:purana_bazzar/fragments/ads/posted_ads.dart';
 import 'package:purana_bazzar/utils/constants.dart';
 
-class MessageFragment extends StatefulWidget {
+class MyAdsFragment extends StatefulWidget {
   @override
-  _MessageFragmentState createState() => _MessageFragmentState();
+  _MyAdsFragmentState createState() => _MyAdsFragmentState();
 }
 
-class _MessageFragmentState extends State<MessageFragment> with SingleTickerProviderStateMixin {
-  final _messagePages = [AllMessagesFragment(), BuyingMessageFragment(), SellingMessageFragment()];
+class _MyAdsFragmentState extends State<MyAdsFragment> with SingleTickerProviderStateMixin{
+
+  final _adsPages = [PostedAds(), FavouriteAds()];
 
   int _currentPage = 0;
   TabController _tabController;
@@ -22,7 +20,7 @@ class _MessageFragmentState extends State<MessageFragment> with SingleTickerProv
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: _messagePages.length, vsync: this);
+    _tabController = TabController(length: _adsPages.length, vsync: this);
   }
   @override
   void dispose() {
@@ -30,6 +28,8 @@ class _MessageFragmentState extends State<MessageFragment> with SingleTickerProv
     _pageController.dispose();
     super.dispose();
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +64,7 @@ class _MessageFragmentState extends State<MessageFragment> with SingleTickerProv
                 });
               },
               itemBuilder: (_, index) {
-                return  _messagePages[index];
+                return  _adsPages[index];
               },
             ),
           ),
@@ -92,7 +92,7 @@ class _MessageFragmentState extends State<MessageFragment> with SingleTickerProv
             ),
             child: Align(
               alignment: Alignment.center,
-              child: Text("ALL"),
+              child: Text("Selling"),
             ),
           ),
         ),
@@ -104,22 +104,11 @@ class _MessageFragmentState extends State<MessageFragment> with SingleTickerProv
             ),
             child: Align(
               alignment: Alignment.center,
-              child: Text("BUYING"),
+              child: Text("Favourite"),
             ),
           ),
         ),
-        Tab(
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(50),
-              border: Border.all(color: mPrimaryDarkColor, width: 1),
-            ),
-            child: Align(
-              alignment: Alignment.center,
-              child: Text("SELLING"),
-            ),
-          ),
-        ),
+
       ],
     );
   }
