@@ -8,8 +8,8 @@ class AllMessagesFragment extends StatefulWidget {
   _AllMessagesFragmentState createState() => _AllMessagesFragmentState();
 }
 
-class _AllMessagesFragmentState extends State<AllMessagesFragment> with AutomaticKeepAliveClientMixin{
-
+class _AllMessagesFragmentState extends State<AllMessagesFragment>
+    with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -18,9 +18,11 @@ class _AllMessagesFragmentState extends State<AllMessagesFragment> with Automati
       width: size.width,
       height: size.height,
       padding: const EdgeInsets.only(top: 10),
-      child: Column(
-        children: [
-          Slidable(
+      child: ListView.separated(
+        itemCount: 4,
+        separatorBuilder: (context, index) => Divider(thickness: 0.5),
+        itemBuilder: (_, index) {
+          return Slidable(
             actionPane: SlidableDrawerActionPane(),
             closeOnScroll: true,
             secondaryActions: [
@@ -35,53 +37,8 @@ class _AllMessagesFragmentState extends State<AllMessagesFragment> with Automati
               ),
             ],
             child: MessageBlock(),
-          ),
-          Slidable(
-            actionPane: SlidableDrawerActionPane(),
-            secondaryActions: [
-              IconSlideAction(
-                caption: 'Delete',
-                color: Colors.red,
-                icon: Icons.delete_outline,
-                onTap: () {
-                  Fluttertoast.showToast(msg: "Delete");
-                },
-              ),
-            ],
-            child: MessageBlock(),
-          ),
-          Slidable(
-            actionPane: SlidableDrawerActionPane(),
-            closeOnScroll: true,
-            secondaryActions: [
-              IconSlideAction(
-                closeOnTap: true,
-                caption: 'Delete',
-                color: Colors.red,
-                icon: Icons.delete_outline,
-                onTap: () {
-                  Fluttertoast.showToast(msg: "Delete");
-                },
-              ),
-            ],
-            child: MessageBlock(),
-          ),
-          Slidable(
-            actionPane: SlidableDrawerActionPane(),
-            secondaryActions: [
-              IconSlideAction(
-                caption: 'Delete',
-                color: Colors.red,
-                icon: Icons.delete_outline,
-                onTap: () {
-                  Fluttertoast.showToast(msg: "Delete");
-                },
-              ),
-            ],
-            child: MessageBlock(),
-          ),
-
-        ],
+          );
+        },
       ),
     );
   }
