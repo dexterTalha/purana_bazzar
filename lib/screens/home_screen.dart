@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:purana_bazzar/fragments/home_fragment.dart';
@@ -9,13 +10,14 @@ import 'package:purana_bazzar/utils/category_block.dart';
 import 'package:purana_bazzar/utils/constants.dart';
 import 'package:purana_bazzar/utils/top_search_bar.dart';
 
+import 'ad_post_screen.dart';
+
 class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
   int _currentPage = 0;
   final pages = [
     HomeFragment(),
@@ -24,13 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
     MyAdsFragment(),
     ProfileFragment(),
   ];
-  final titles = [
-    "Home",
-    "Messages",
-    "",
-    "My Ads",
-    "My Profile"
-  ];
+  final titles = ["Home", "Messages", "", "My Ads", "My Profile"];
 
   @override
   Widget build(BuildContext context) {
@@ -38,28 +34,34 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: _currentPage == 0?mPrimaryColor:Colors.white,
-        title: _currentPage!=0 ? Text(titles[_currentPage], style: googleBtnTextStyle,) : TopSearchBar(
-          onSearchTap: () {
-            Fluttertoast.showToast(msg: "search");
-          },
-        ),
-
+        backgroundColor: _currentPage == 0 ? mPrimaryColor : Colors.white,
+        title: _currentPage != 0
+            ? Text(
+                titles[_currentPage],
+                style: googleBtnTextStyle,
+              )
+            : TopSearchBar(
+                onSearchTap: () {
+                  Fluttertoast.showToast(msg: "search");
+                },
+              ),
         centerTitle: _currentPage != 0,
-        actions: _currentPage == 0?[
-         /* IconButton(
+        actions: _currentPage == 0
+            ? [
+                /* IconButton(
               icon: Icon(
                 Icons.messenger,
                 color: Colors.white,
               ),
               onPressed: () {}),*/
-          IconButton(
-              icon: Icon(
-                Icons.notifications,
-                color: Colors.white,
-              ),
-              onPressed: () {})
-        ]:[],
+                IconButton(
+                    icon: Icon(
+                      Icons.notifications,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {})
+              ]
+            : [],
       ),
       bottomNavigationBar: BottomAppBar(
         shape: CircularNotchedRectangle(),
@@ -74,8 +76,8 @@ class _HomeScreenState extends State<HomeScreen> {
           showSelectedLabels: false,
           type: BottomNavigationBarType.fixed,
           currentIndex: _currentPage,
-          onTap: (index){
-            if(index != 2) {
+          onTap: (index) {
+            if (index != 2) {
               setState(() {
                 _currentPage = index;
               });
@@ -94,9 +96,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Icons.message,
               ),
             ),
-            BottomNavigationBarItem(label: "", icon: Container(
-
-            )),
+            BottomNavigationBarItem(label: "", icon: Container()),
             BottomNavigationBarItem(
               label: "Ads",
               icon: Icon(
@@ -115,7 +115,8 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Fluttertoast.showToast(msg: "Sell");
+          Navigator.push(context,
+              CupertinoPageRoute<Null>(builder: (_) => AdPostScreen()));
         },
         backgroundColor: mPrimaryColor,
         child: Icon(Icons.add),
