@@ -25,6 +25,8 @@ dependencies:
   like_button: ^1.0.4
   provider: ^4.3.2+2
   flutter_slidable: ^0.5.7
+  google_maps_flutter: ^1.0.6
+  image_picker: ^0.6.7+14
 
 dev_dependencies:
   flutter_test:

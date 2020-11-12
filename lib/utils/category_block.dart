@@ -1,7 +1,15 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:purana_bazzar/screens/ad_post_screen.dart';
 import 'package:purana_bazzar/utils/constants.dart';
 
 class CategoryBlock extends StatelessWidget {
+
+  final bool isPostAd;
+
+
+  CategoryBlock({this.isPostAd = false});
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -49,13 +57,21 @@ class CategoryBlock extends StatelessWidget {
         children: [
           ListTile(
             onTap: () {
-
+              if(isPostAd){
+                Navigator.pushReplacement(context,
+                    CupertinoPageRoute<Null>(builder: (_) => AdPostScreen()));
+              }
             },
             title: Text("Testing"),
             leading: Icon(Icons.ac_unit),
           ),
           ListTile(
-            onTap: () {},
+            onTap: () {
+              if(isPostAd){
+                Navigator.pushReplacement(context,
+                    CupertinoPageRoute<Null>(builder: (_) => AdPostScreen()));
+              }
+            },
             title: Text("Testing"),
             leading: Icon(Icons.ac_unit),
           )

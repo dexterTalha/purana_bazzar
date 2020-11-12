@@ -20,7 +20,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         centerTitle: true,
         title: Text(
           "Product Detail",
-          style: googleBtnTextStyle,
+          style: googleBtnTextStyle.copyWith(color: Colors.white),
         ),
       ),
       body: Container(

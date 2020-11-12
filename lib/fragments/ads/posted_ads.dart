@@ -7,7 +7,7 @@ class PostedAds extends StatefulWidget {
   _PostedAdsState createState() => _PostedAdsState();
 }
 
-class _PostedAdsState extends State<PostedAds> with AutomaticKeepAliveClientMixin{
+class _PostedAdsState extends State<PostedAds> with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -19,8 +19,14 @@ class _PostedAdsState extends State<PostedAds> with AutomaticKeepAliveClientMixi
       child: GridView.count(
         crossAxisCount: 2,
         children: [
-          AdViewBlock(isMyAdd: true,id: 1,),
-          AdViewBlock(isMyAdd: true,id: 2,),
+          AdViewBlock(
+            isMyAdd: true,
+            id: 1,
+          ),
+          AdViewBlock(
+            isMyAdd: true,
+            id: 2,
+          ),
         ],
       ),
     );
@@ -28,6 +34,4 @@ class _PostedAdsState extends State<PostedAds> with AutomaticKeepAliveClientMixi
 
   @override
   bool get wantKeepAlive => true;
-
-
 }
