@@ -189,7 +189,6 @@ class _HomeFragmentState extends State<HomeFragment> {
                 ),
                 Expanded(
                   child: Container(
-
                     height: 70,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -242,7 +241,7 @@ class _HomeFragmentState extends State<HomeFragment> {
             child: MySeparator(),
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 30, left: 20),
+            padding: const EdgeInsets.only(top: 10, left: 20),
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 15),
               child: Row(
@@ -270,7 +269,7 @@ class _HomeFragmentState extends State<HomeFragment> {
           ),
 
           Padding(
-            padding: const EdgeInsets.only(top: 20.0, left: 5),
+            padding: const EdgeInsets.only(top: 10.0, left: 5),
             child: isCatLoading
                 ? CupertinoActivityIndicator()
                 : GridView.builder(
@@ -279,6 +278,7 @@ class _HomeFragmentState extends State<HomeFragment> {
                     physics: NeverScrollableScrollPhysics(),
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 4,
+                      childAspectRatio: 1.3
                     ),
                     itemCount: parentCategory.length,
                     itemBuilder: (_, index) {
@@ -368,7 +368,23 @@ class _HomeFragmentState extends State<HomeFragment> {
                 ),
               ),
             ),
-            Container(
+            index == 1 ?Container(
+              height: 250*3.0,
+              child: GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 0.8
+                ),
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: allList[index].length < 7 ? allList[index].length : 6,
+                itemBuilder: (_c, i){
+                  return AdViewBlock(
+                    ad: allList[index][i],
+                    type: headings[index],
+                  );
+                },
+              ),
+            ) : Container(
               height: 250,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,

@@ -1,10 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:loading_overlay/loading_overlay.dart';
 import 'package:purana_bazzar/firebase_helper/firebase_login.dart';
 import 'package:purana_bazzar/firebase_helper/firebase_operations.dart';
+import 'package:purana_bazzar/helper/helper.dart';
 import 'package:purana_bazzar/screens/home_screen.dart';
 import 'package:purana_bazzar/screens/signup_screen.dart';
 import 'package:purana_bazzar/utils/constants.dart';
@@ -127,19 +130,18 @@ class _OtpScreenState extends State<OtpScreen> {
       setState(() {
         if (user != null) {
           _message = 'Successfully signed in';
-          matchOtp();
         } else {
-          FirebaseLogin().onAuthStateChanged(context);
           _message = 'Sign in failed';
         }
       });
       Fluttertoast.showToast(msg: _message);
-
+      if (user != null)
+        matchOtp(user);
     }on PlatformException catch(e){
       setState(() {
         isLoading = false;
       });
-      print(e.message);
+
     }
   }
 
@@ -264,230 +266,259 @@ class _OtpScreenState extends State<OtpScreen> {
       ),
     ];
     final size = MediaQuery.of(context).size;
-    return Scaffold(
-      resizeToAvoidBottomPadding: false,
-      backgroundColor: Color(0xFFffffff),
-      body: Stack(
-        overflow: Overflow.clip,
-        children: [
-          AnimatedPositioned(
-            duration: Duration(milliseconds: 300),
-            top: - size.height *0.25,
-            left: - size.height *0.25,
-            child: Container(
-              height: size.height * 0.5,
-              width: size.height *0.5,
-              decoration: BoxDecoration(
-                  color: mPrimaryColor,
-                  borderRadius: BorderRadius.circular(size.height * 0.25)
-              ),
-            ),
-          ),
-          AnimatedPositioned(
-            duration: Duration(milliseconds: 300),
-            top: size.height *0.45,
-            right: - size.height * 0.35,
-            child: Container(
-              height: size.height * 0.5,
-              width: size.height *0.5,
-              decoration: BoxDecoration(
-                  color: mPrimaryColor,
-                  borderRadius: BorderRadius.circular(size.height * 0.25)
-              ),
-            ),
-          ),
-          SafeArea(
-            child: Container(
-              padding: const EdgeInsets.only(top: 20),
-              child: Column(
-                children: <Widget>[
-                  Flexible(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          child: Text(
-                            "Verifying your number!",
-                            style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 16.0, top: 4.0, right: 16.0),
-                          child: Text(
-                            "Please type the verification code sent to",
-                            style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.normal),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 30.0, top: 2.0, right: 30.0),
-                          child: Text(
-                            "+91 ${widget.mobile}",
-                            style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.bold, color: Colors.red),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 16.0),
-                          child: Image(
-                            image: AssetImage('assets/png/otp_icon.png'),
-                            height: 120.0,
-                            width: 120.0,
-                          ),
-                        )
-                      ],
-                    ),
-                    flex: 90,
+    return WillPopScope(
+      onWillPop: () =>  HelperClass.buildDiscardDialog(context),
+      child: LoadingOverlay(
+        isLoading: isLoading,
+        child: Scaffold(
+          resizeToAvoidBottomPadding: false,
+          backgroundColor: Color(0xFFffffff),
+          body: Stack(
+            overflow: Overflow.clip,
+            children: [
+              AnimatedPositioned(
+                duration: Duration(milliseconds: 300),
+                top: - size.height *0.25,
+                left: - size.height *0.25,
+                child: Container(
+                  height: size.height * 0.5,
+                  width: size.height *0.5,
+                  decoration: BoxDecoration(
+                      color: mPrimaryColor,
+                      borderRadius: BorderRadius.circular(size.height * 0.25)
                   ),
-                  Flexible(
-                    child: Column(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
-                      GridView.count(
-                          crossAxisCount: 8,
-                          mainAxisSpacing: 10.0,
-                          shrinkWrap: true,
-                          primary: false,
-                          scrollDirection: Axis.vertical,
-                          children: List<Container>.generate(8, (int index) => Container(child: widgetList[index]))),
-                    ]),
-                    flex: 20,
+                ),
+              ),
+              AnimatedPositioned(
+                duration: Duration(milliseconds: 300),
+                top: size.height *0.45,
+                right: - size.height * 0.35,
+                child: Container(
+                  height: size.height * 0.5,
+                  width: size.height *0.5,
+                  decoration: BoxDecoration(
+                      color: mPrimaryColor,
+                      borderRadius: BorderRadius.circular(size.height * 0.25)
                   ),
-                  Flexible(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Container(
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 8.0, top: 16.0, right: 8.0, bottom: 0.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: <Widget>[
-                                MaterialButton(
-                                  onPressed: () {
-                                    inputTextToField("1");
-                                  },
-                                  child: Text("1", style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w400), textAlign: TextAlign.center),
-                                ),
-                                MaterialButton(
-                                  onPressed: () {
-                                    inputTextToField("2");
-                                  },
-                                  child: Text("2", style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w400), textAlign: TextAlign.center),
-                                ),
-                                MaterialButton(
-                                  onPressed: () {
-                                    inputTextToField("3");
-                                  },
-                                  child: Text("3", style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w400), textAlign: TextAlign.center),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Container(
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 8.0, top: 4.0, right: 8.0, bottom: 0.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: <Widget>[
-                                MaterialButton(
-                                  onPressed: () {
-                                    inputTextToField("4");
-                                  },
-                                  child: Text("4", style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w400), textAlign: TextAlign.center),
-                                ),
-                                MaterialButton(
-                                  onPressed: () {
-                                    inputTextToField("5");
-                                  },
-                                  child: Text("5", style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w400), textAlign: TextAlign.center),
-                                ),
-                                MaterialButton(
-                                  onPressed: () {
-                                    inputTextToField("6");
-                                  },
-                                  child: Text("6", style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w400), textAlign: TextAlign.center),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Container(
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 8.0, top: 4.0, right: 8.0, bottom: 0.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: <Widget>[
-                                MaterialButton(
-                                  onPressed: () {
-                                    inputTextToField("7");
-                                  },
-                                  child: Text("7", style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w400), textAlign: TextAlign.center),
-                                ),
-                                MaterialButton(
-                                  onPressed: () {
-                                    inputTextToField("8");
-                                  },
-                                  child: Text("8", style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w400), textAlign: TextAlign.center),
-                                ),
-                                MaterialButton(
-                                  onPressed: () {
-                                    inputTextToField("9");
-                                  },
-                                  child: Text("9", style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w400), textAlign: TextAlign.center),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Container(
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 8.0, top: 4.0, right: 8.0, bottom: 0.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: <Widget>[
-                                MaterialButton(
-                                    onPressed: () {
-                                      deleteText();
-                                    },
-                                    child: Image.asset('assets/png/delete.png', width: 25.0, height: 25.0)),
-                                MaterialButton(
-                                  onPressed: () {
-                                    inputTextToField("0");
-                                  },
-                                  child: Text("0", style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w400), textAlign: TextAlign.center),
-                                ),
-                                MaterialButton(
-                                    onPressed: () {
-                                      if(isCodeNotSent){
-                                        Fluttertoast.showToast(msg: "Please wait");
-                                        return;
-                                      }
-                                      smsCode = "${controller1.text}${controller2.text}${controller3.text}${controller4.text}${controller5.text}${controller6.text}";
-                                      setState(() {});
-                                      _signInWithPhoneNumber();
+                ),
+              ),
+              SafeArea(
+                child: Container(
+                  padding: const EdgeInsets.only(top: 20),
+                  child: Column(
+                    children: <Widget>[
+                      Flexible(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.start,
 
-                                    },
-                                    child: Image.asset('assets/png/success.png', width: 25.0, height: 25.0)),
-                              ],
+                          children: <Widget>[
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Container(
+                                height: AppBar().preferredSize.height,
+                                child: IconButton(
+                                  icon: Icon(Icons.close),
+                                  color: Colors.white,
+                                  onPressed: () async {
+                                    await HelperClass.buildDiscardDialog(context);
+                                  },
+                                ),
+                              ),
                             ),
-                          ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Text(
+                                "Verifying your number!",
+                                style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 16.0, top: 4.0, right: 16.0),
+                              child: Text(
+                                "Please type the verification code sent to",
+                                style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.normal),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 30.0, top: 2.0, right: 30.0),
+                              child: Text(
+                                "+91 ${widget.mobile}",
+                                style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.bold, color: Colors.red),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 16.0),
+                              child: Image(
+                                image: AssetImage('assets/png/otp_icon.png'),
+                                height: 120.0,
+                                width: 120.0,
+                              ),
+                            )
+                          ],
                         ),
-                      ],
-                    ),
-                    flex: 90,
+                        flex: 90,
+                      ),
+                      Flexible(
+                        child: Column(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
+                          GridView.count(
+                              crossAxisCount: 8,
+                              mainAxisSpacing: 10.0,
+                              shrinkWrap: true,
+                              primary: false,
+                              scrollDirection: Axis.vertical,
+                              children: List<Container>.generate(8, (int index) => Container(child: widgetList[index]))),
+                        ]),
+                        flex: 20,
+                      ),
+                      Flexible(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Container(
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 8.0, top: 16.0, right: 8.0, bottom: 0.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                    MaterialButton(
+                                      onPressed: () {
+                                        inputTextToField("1");
+                                      },
+                                      child: Text("1", style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w400), textAlign: TextAlign.center),
+                                    ),
+                                    MaterialButton(
+                                      onPressed: () {
+                                        inputTextToField("2");
+                                      },
+                                      child: Text("2", style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w400), textAlign: TextAlign.center),
+                                    ),
+                                    MaterialButton(
+                                      onPressed: () {
+                                        inputTextToField("3");
+                                      },
+                                      child: Text("3", style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w400), textAlign: TextAlign.center),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Container(
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 8.0, top: 4.0, right: 8.0, bottom: 0.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                    MaterialButton(
+                                      onPressed: () {
+                                        inputTextToField("4");
+                                      },
+                                      child: Text("4", style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w400), textAlign: TextAlign.center),
+                                    ),
+                                    MaterialButton(
+                                      onPressed: () {
+                                        inputTextToField("5");
+                                      },
+                                      child: Text("5", style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w400), textAlign: TextAlign.center),
+                                    ),
+                                    MaterialButton(
+                                      onPressed: () {
+                                        inputTextToField("6");
+                                      },
+                                      child: Text("6", style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w400), textAlign: TextAlign.center),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Container(
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 8.0, top: 4.0, right: 8.0, bottom: 0.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                    MaterialButton(
+                                      onPressed: () {
+                                        inputTextToField("7");
+                                      },
+                                      child: Text("7", style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w400), textAlign: TextAlign.center),
+                                    ),
+                                    MaterialButton(
+                                      onPressed: () {
+                                        inputTextToField("8");
+                                      },
+                                      child: Text("8", style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w400), textAlign: TextAlign.center),
+                                    ),
+                                    MaterialButton(
+                                      onPressed: () {
+                                        inputTextToField("9");
+                                      },
+                                      child: Text("9", style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w400), textAlign: TextAlign.center),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Container(
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 8.0, top: 4.0, right: 8.0, bottom: 0.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                    MaterialButton(
+                                        onPressed: () {
+                                          deleteText();
+                                        },
+                                        child: Image.asset('assets/png/delete.png', width: 25.0, height: 25.0)),
+                                    MaterialButton(
+                                      onPressed: () {
+                                        inputTextToField("0");
+                                      },
+                                      child: Text("0", style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w400), textAlign: TextAlign.center),
+                                    ),
+                                    MaterialButton(
+                                        onPressed: () {
+                                          if(isCodeNotSent){
+                                            Fluttertoast.showToast(msg: "Please wait");
+                                            return;
+                                          }
+
+                                          smsCode = "${controller1.text}${controller2.text}${controller3.text}${controller4.text}${controller5.text}${controller6.text}";
+                                          if(smsCode.isEmpty){
+                                            Fluttertoast.showToast(msg: "Please enter OTP");
+                                            return;
+                                          }
+                                          if(smsCode.length < 6){
+                                            Fluttertoast.showToast(msg: "Please enter valid 6 digit OTP");
+                                            return;
+                                          }
+                                          //setState(() {});
+                                          _signInWithPhoneNumber();
+
+                                        },
+                                        child: Image.asset('assets/png/success.png', width: 25.0, height: 25.0)),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        flex: 90,
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -558,22 +589,26 @@ class _OtpScreenState extends State<OtpScreen> {
     }
   }
 
-  void matchOtp() {
+  void matchOtp(User user) {
     showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text("Successfully"),
-            content: Text("Otp matched successfully."),
-            actions: <Widget>[
-              IconButton(
-                  icon: Icon(Icons.check),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    FirebaseLogin().onAuthStateChanged(context, firebaseUser: _auth.currentUser);
-                  })
-            ],
-          );
-        });
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Successfully"),
+          content: Text("Otp matched successfully."),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.check),
+              onPressed: () {
+                SchedulerBinding.instance.addPostFrameCallback((_) {
+                  //Navigator.of(context).pop();
+                  FirebaseLogin().onAuthStateChanged(context, firebaseUser: user);
+                });
+              },
+            )
+          ],
+        );
+      },
+    );
   }
 }

@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -144,15 +146,15 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
             isAuthenticating = true;
           });
           rotationController.forward();
-          bool isLogin = await FirebaseLogin().signInWithGoogle();
+          User isLogin = await FirebaseLogin().signInWithGoogle();
           setState(() {
             isAuthenticating = false;
           });
           rotationController.stop();
           rotationController.reset();
-          if(isLogin){
+          if(isLogin != null){
             Fluttertoast.showToast(msg: "Success");
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => SignUpScreen(isGoogle: true,)));
+            FirebaseLogin().onAuthStateChanged(context, firebaseUser: isLogin);
           }else{
             Fluttertoast.showToast(msg: "Error");
           }
@@ -293,7 +295,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                   if (_formKey.currentState.validate()) {
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(
+                      CupertinoPageRoute(
                         builder: (_) => OtpScreen(
                           mobile: _mobileController.text.trim(),
                         ),

@@ -3,7 +3,7 @@ import 'package:purana_bazzar/firebase_helper/firebase_login.dart';
 import 'package:purana_bazzar/utils/constants.dart';
 
 class HelperClass {
-  static void buildDiscardDialog(BuildContext context) {
+  static Future<bool> buildDiscardDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
@@ -34,5 +34,6 @@ class HelperClass {
         ],
       ),
     );
+    return Future.value(true);
   }
 }

@@ -1,11 +1,16 @@
+import 'dart:convert';
+
+import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:purana_bazzar/models/category_model.dart';
 import 'package:purana_bazzar/utils/category_block.dart';
 import 'package:purana_bazzar/utils/constants.dart';
 
 class AllCategoryScreen extends StatefulWidget {
 
   final bool isPostAd;
-
 
   AllCategoryScreen({this.isPostAd = false});
 
@@ -14,6 +19,50 @@ class AllCategoryScreen extends StatefulWidget {
 }
 
 class _AllCategoryScreenState extends State<AllCategoryScreen> {
+
+  List<CategoryModel> parentCategory = [], childCategory = [];
+  bool isCatLoading = true;
+
+
+  @override
+  void initState() {
+    super.initState();
+    _getCategories();
+  }
+
+  Future<void> _getCategories() async {
+    childCategory = [];
+    parentCategory = [];
+    final Dio dio = Dio();
+    String url = "${baseUrl}get_category.php";
+    Response response = await dio.get(url);
+    var data = jsonDecode(response.data);
+    bool status = data['status'];
+    if(!status){
+      if (this.mounted) {
+        setState(() {
+          isCatLoading = false;
+        });
+      }
+      Fluttertoast.showToast(msg: "Error in loading categories! Pull to refresh");
+      return;
+    }
+    for(Map<String, dynamic> map in data['data']){
+      parentCategory.add(CategoryModel.fromJson(map));
+    }
+    for (int i = 0; i < parentCategory.length; i++) {
+      for (Map childCat in data['data'][i]["sub"])
+        childCategory.add(CategoryModel.fromJson(childCat));
+    }
+
+    if (this.mounted) {
+      setState(() {
+        isCatLoading = false;
+      });
+    }
+
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -35,15 +84,36 @@ class _AllCategoryScreenState extends State<AllCategoryScreen> {
       body: Container(
         height: size.height,
         width: size.width,
-        padding: const EdgeInsets.all(10),
-        child: GridView.count(
-          shrinkWrap: false,
+        child: isCatLoading
+            ? CupertinoActivityIndicator()
+            : GridView.builder(
+          shrinkWrap: true,
           scrollDirection: Axis.vertical,
           physics: BouncingScrollPhysics(),
-          crossAxisCount: 2,
-          children: List.generate(10, (index) {
-            return CategoryBlock(isPostAd: true,);
-          }),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+          ),
+          itemCount: parentCategory.length,
+          itemBuilder: (_, index) {
+            if (parentCategory.length <= 0) {
+              print("no data");
+              return Center(
+                child: Text(
+                  "No Categories",
+                  style: googleBtnTextStyle,
+                ),
+              );
+            }
+            List<CategoryModel> tempChild = [];
+            for (CategoryModel cc in childCategory) {
+              if (cc.parent == parentCategory[index].id) tempChild.add(cc);
+            }
+            return CategoryBlock(
+              childrenCat: tempChild,
+              parent: parentCategory[index],
+              isPostAd: widget.isPostAd,
+            );
+          },
         ),
       ),
     );

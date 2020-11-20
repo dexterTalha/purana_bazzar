@@ -8,8 +8,8 @@ import 'package:purana_bazzar/utils/constants.dart';
 class CategoryBlock extends StatelessWidget {
 
   final bool isPostAd;
-  List<CategoryModel> childrenCat;
-  CategoryModel parent;
+  final List<CategoryModel> childrenCat;
+  final CategoryModel parent;
 
 
   CategoryBlock({this.isPostAd = false, @required this.childrenCat, @required this.parent});
@@ -22,8 +22,8 @@ class CategoryBlock extends StatelessWidget {
         showChildCatDialog(context);
       },
       child: Container(
-        height: 200,
-        width: 180,
+        height: 180,
+        width: 160,
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
@@ -40,21 +40,23 @@ class CategoryBlock extends StatelessWidget {
           child: Column(
             children: [
               Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: CachedNetworkImage(
-                imageUrl: parent.image,
-                height: 80,
-                width: 80,
-                fit: BoxFit.contain,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CachedNetworkImage(
+                    imageUrl: parent.image,
+                    height: 80,
+                    width: 80,
+                    fit: BoxFit.contain,
+                  ),
+                ),
               ),
-                  )),
               SizedBox(
                 height: 4,
               ),
               Text(
                 parent.name,
-                style: TextStyle(fontSize: 14, color: Colors.black),
+                overflow: TextOverflow.ellipsis,
+                style: googleBtnTextStyle.copyWith(fontSize: isPostAd? 18:14),
               ),
             ],
           ),
@@ -70,20 +72,23 @@ class CategoryBlock extends StatelessWidget {
         parent.name,
         style: googleBtnTextStyle,
       ),
-      content: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: List.generate(
-            childrenCat.length,
-          (index) => ListTile(
-            onTap: () {
-              if (isPostAd) {
-                Navigator.pushReplacement(context, CupertinoPageRoute<Null>(builder: (_) => AdPostScreen()));
-              }else{
+      content: SingleChildScrollView(
+        physics: BouncingScrollPhysics(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: List.generate(
+              childrenCat.length,
+            (index) => ListTile(
+              onTap: () {
+                if (isPostAd) {
+                  Navigator.pushReplacement(context, CupertinoPageRoute<Null>(builder: (_) => AdPostScreen()));
+                }else{
 
-              }
-            },
-            title: Text(childrenCat[index].name),
+                }
+              },
+              title: Text(childrenCat[index].name),
+            ),
           ),
         ),
       ),

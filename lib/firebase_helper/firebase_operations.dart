@@ -16,6 +16,7 @@ class FirebaseCheck {
     CollectionReference users = FirebaseFirestore.instance.collection('Users');
 
     final data = await users.doc(uid).get();
+    print("is old user : ${data.exists}");
     return data.exists;
   }
 

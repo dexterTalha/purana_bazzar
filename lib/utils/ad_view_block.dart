@@ -19,11 +19,13 @@ class AdViewBlock extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
+        //print(type+ad.id);
         Navigator.push(
           context,
           CupertinoPageRoute(
             builder: (_) => ProductDetailScreen(
-              id: int.parse(ad.id),
+              id: ad.id,
+              type: type,
             ),
           ),
         );
@@ -35,6 +37,7 @@ class AdViewBlock extends StatelessWidget {
           child: Stack(
             children: [
               Container(
+                height: 250,
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
@@ -46,7 +49,7 @@ class AdViewBlock extends StatelessWidget {
                       child: ClipRRect(
                         borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10)),
                         child: Hero(
-                          tag: "Product${ad.id}$type",
+                          tag: "Product${ad.id},$type",
                           child: CachedNetworkImage(
                             imageUrl: ad.images[0],
                             height: 210,

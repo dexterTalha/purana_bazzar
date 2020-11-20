@@ -24,7 +24,7 @@ class FirebaseLogin{
   Status _status = Status.Uninitialized;
 
 
-  Future<bool> signInWithGoogle() async {
+  Future<User> signInWithGoogle() async {
     final GoogleSignIn googleSignIn = new GoogleSignIn();
 
     try {
@@ -33,7 +33,7 @@ class FirebaseLogin{
     final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
     if (googleSignInAccount == null) {
       Fluttertoast.showToast(msg: "Login denied");
-      return false;
+      return null;
     }
     final GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
 
@@ -56,11 +56,11 @@ class FirebaseLogin{
       print('signInWithGoogle succeeded: $user');
 
 
-      return true;
+      return user;
     }
     _status = Status.Unauthenticated;
 
-    return false;
+    return null;
   }
 
   Status get status => _status;
@@ -78,7 +78,7 @@ class FirebaseLogin{
 
     if (firebaseUser == null) {
       bool isOld = await SharedPref().isOld();
-      Navigator.pushReplacement(context, CupertinoPageRoute(builder: (_) => isOld ? FancyBackgroundApp(child:LoginScreen()):WalkThroughScreen()));
+      Navigator.pushAndRemoveUntil(context, CupertinoPageRoute(builder: (_) => isOld ? FancyBackgroundApp(child:LoginScreen()):WalkThroughScreen()), (b) => false);
     } else {
       _user = firebaseUser;
       _status = Status.Authenticated;
@@ -91,7 +91,7 @@ class FirebaseLogin{
           Navigator.pushReplacement(context, CupertinoPageRoute(builder: (_)=> HomeScreen()));
       }else {
 
-        Navigator.pushReplacement(context, CupertinoPageRoute(builder: (_)=> SignUpScreen(isGoogle: user.email!='',)));
+        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_)=> SignUpScreen(isGoogle: user.email!='',)), (b) => false);
       }
     }
     //notifyListeners();

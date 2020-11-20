@@ -67,9 +67,9 @@ class _SignUpScreenState extends State<SignUpScreen> with SingleTickerProviderSt
       Navigator.pushReplacement(context, CupertinoPageRoute(builder: (_)=>LoginScreen()));
     }else {
       uid = user.uid;
-      if (widget.isGoogle) {
+      if (widget.isGoogle && user.email != null) {
         email = user.email;
-        print(email);
+
         name = user.displayName;
         _emailController.value = TextEditingValue(text: email);
         _nameController.value = TextEditingValue(text: name);
@@ -94,280 +94,283 @@ class _SignUpScreenState extends State<SignUpScreen> with SingleTickerProviderSt
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
-    return Scaffold(
-      resizeToAvoidBottomPadding: false,
-      backgroundColor: Colors.white,
-      body: Container(
-        width: size.width,
-        height: size.height,
-        child: Stack(
-          overflow: Overflow.clip,
-          children: [
-            Positioned(
-              top: -size.width * 0.40,
-              left: -size.width * 0.40,
-              child: ScaleTransition(
-                scale: _animation,
-                child: Container(
-                  height: size.width * 0.8,
-                  width: size.width * 0.8,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(size.width * 0.5),
-                    gradient: RadialGradient(
-                      colors: [
-                        mPrimaryDarkColor.withOpacity(0.8),
-                        mPrimaryDarkColor.withOpacity(0.6),
-                        mPrimaryColor.withOpacity(0.8),
-                        mPrimaryColor.withOpacity(0.6),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              top: 100,
-              right: 20,
-              child: ScaleTransition(
-                scale: _animation,
-                child: Container(
-                  height: 50,
-                  width: 50,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(size.width * 0.5),
-                    gradient: RadialGradient(
-                      colors: [
-                        mPrimaryDarkColor.withOpacity(0.8),
-                        mPrimaryColor.withOpacity(0.6),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              bottom: 100,
-              left: 20,
-              child: ScaleTransition(
-                scale: _animation,
-                child: Container(
-                  height: 50,
-                  width: 50,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(size.width * 0.5),
-                    gradient: RadialGradient(
-                      colors: [
-                        mPrimaryDarkColor.withOpacity(0.8),
-                        mPrimaryColor.withOpacity(0.6),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              bottom: -size.width * 0.40,
-              right: -size.width * 0.40,
-              child:  ScaleTransition(
-                scale: _animation,
-                child: Container(
-                  height: size.width * 0.8,
-                  width: size.width * 0.8,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(size.width * 0.5),
-                    gradient: RadialGradient(
-                      colors: [
-                        mPrimaryDarkColor.withOpacity(0.8),
-                        mPrimaryDarkColor.withOpacity(0.6),
-                        mPrimaryColor.withOpacity(0.8),
-                        mPrimaryColor.withOpacity(0.6),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Form(
-              key: _formKey,
-              child: SafeArea(
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.max,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        height: AppBar().preferredSize.height,
-                        child: IconButton(
-                          icon: Icon(Icons.close),
-                          color: Colors.white,
-                          onPressed: () {
-                            HelperClass.buildDiscardDialog(context);
-                          },
-                        ),
+    return WillPopScope(
+      onWillPop: ()=> HelperClass.buildDiscardDialog(context),
+      child: Scaffold(
+        resizeToAvoidBottomPadding: false,
+        backgroundColor: Colors.white,
+        body: Container(
+          width: size.width,
+          height: size.height,
+          child: Stack(
+            overflow: Overflow.clip,
+            children: [
+              Positioned(
+                top: -size.width * 0.40,
+                left: -size.width * 0.40,
+                child: ScaleTransition(
+                  scale: _animation,
+                  child: Container(
+                    height: size.width * 0.8,
+                    width: size.width * 0.8,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(size.width * 0.5),
+                      gradient: RadialGradient(
+                        colors: [
+                          mPrimaryDarkColor.withOpacity(0.8),
+                          mPrimaryDarkColor.withOpacity(0.6),
+                          mPrimaryColor.withOpacity(0.8),
+                          mPrimaryColor.withOpacity(0.6),
+                        ],
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        child: Center(
-                          child: Text(
-                            "Registration",
-                            style: googleBtnTextStyle.copyWith(fontSize: 20),
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 100,
+                right: 20,
+                child: ScaleTransition(
+                  scale: _animation,
+                  child: Container(
+                    height: 50,
+                    width: 50,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(size.width * 0.5),
+                      gradient: RadialGradient(
+                        colors: [
+                          mPrimaryDarkColor.withOpacity(0.8),
+                          mPrimaryColor.withOpacity(0.6),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 100,
+                left: 20,
+                child: ScaleTransition(
+                  scale: _animation,
+                  child: Container(
+                    height: 50,
+                    width: 50,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(size.width * 0.5),
+                      gradient: RadialGradient(
+                        colors: [
+                          mPrimaryDarkColor.withOpacity(0.8),
+                          mPrimaryColor.withOpacity(0.6),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: -size.width * 0.40,
+                right: -size.width * 0.40,
+                child:  ScaleTransition(
+                  scale: _animation,
+                  child: Container(
+                    height: size.width * 0.8,
+                    width: size.width * 0.8,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(size.width * 0.5),
+                      gradient: RadialGradient(
+                        colors: [
+                          mPrimaryDarkColor.withOpacity(0.8),
+                          mPrimaryDarkColor.withOpacity(0.6),
+                          mPrimaryColor.withOpacity(0.8),
+                          mPrimaryColor.withOpacity(0.6),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Form(
+                key: _formKey,
+                child: SafeArea(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          height: AppBar().preferredSize.height,
+                          child: IconButton(
+                            icon: Icon(Icons.close),
+                            color: Colors.white,
+                            onPressed: () async{
+                              await HelperClass.buildDiscardDialog(context);
+                            },
                           ),
                         ),
-                      ),
-                      Center(
-                        child: Container(
-                          margin: const EdgeInsets.only(top: 15),
-                          height: size.height * 0.15,
-                          width: size.height * 0.15,
-                          padding: const EdgeInsets.all(3),
-                          decoration: BoxDecoration(
-                            color: mPrimaryDarkColor,
-                            borderRadius: BorderRadius.circular(size.height * 0.15 * 0.5),
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(size.height * 0.15 * 0.5),
-                            child: _selectedImage == null?Image.asset(
-                              'assets/png/user_image.png',
-                              fit: BoxFit.fill,
-                            ) : Image.file(
-                              _selectedImage,
-                              fit: BoxFit.fill,
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 10),
+                          child: Center(
+                            child: Text(
+                              "Registration",
+                              style: googleBtnTextStyle.copyWith(fontSize: 20),
                             ),
                           ),
                         ),
-                      ),
-                      Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: InkWell(
-                            onTap: (){
-                              showDialog(context: context, builder: (_)=> makeImageChooser(context));
-                            },
-                            child: Text(
-                              "Select picture",
-                              style: googleBtnTextStyle.copyWith(
-                                color: mPrimaryDarkColor,
-                                fontWeight: FontWeight.w100,
-                                fontSize: 16,
-                                decoration: TextDecoration.underline,
+                        Center(
+                          child: Container(
+                            margin: const EdgeInsets.only(top: 15),
+                            height: size.height * 0.15,
+                            width: size.height * 0.15,
+                            padding: const EdgeInsets.all(3),
+                            decoration: BoxDecoration(
+                              color: mPrimaryDarkColor,
+                              borderRadius: BorderRadius.circular(size.height * 0.15 * 0.5),
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(size.height * 0.15 * 0.5),
+                              child: _selectedImage == null?Image.asset(
+                                'assets/png/user_image.png',
+                                fit: BoxFit.fill,
+                              ) : Image.file(
+                                _selectedImage,
+                                fit: BoxFit.fill,
                               ),
                             ),
                           ),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                        child: TextFormField(
-                          controller: _nameController,
-                          validator: (text){
-                            if(text.isEmpty){
-                              return 'Please enter your name';
-                            }
-                            return null;
-                          },
-                          decoration: InputDecoration(
-                            hintText: "e.g. Alex",
-                            labelText: "Name",
-                            border: OutlineInputBorder()
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                        child: TextFormField(
-                          readOnly: widget.isGoogle,
-                          controller: _emailController,
-                          validator: (text){
-                            if(text.isEmpty){
-                              return 'Please enter email';
-                            }
-                            if(!text.contains("@")){
-                              return 'Please enter valid email';
-                            }
-                            return null;
-                          },
-                          decoration: InputDecoration(
-                              hintText: "e.g. example@something.com",
-                              labelText: "Email",
-                              border: OutlineInputBorder()
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                        child: TextFormField(
-                          validator: (text){
-                            if(text.isEmpty){
-                              return 'Please enter mobile number';
-                            }
-                            if(text.length < 10){
-                              return 'Please enter valid mobile number';
-                            }
-                            return null;
-                          },
-                          controller: _mobileController,
-                          readOnly: !widget.isGoogle,
-                          decoration: InputDecoration(
-                              hintText: "e.g. 1234567890",
-                              labelText: "Mobile",
-                              prefix: Text("+91"),
-                              border: OutlineInputBorder()
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                        child: InkWell(
-                          onTap: isLoading? null :() async{
-                            if (_formKey.currentState.validate()) {
-                              setState(() {
-                                isLoading = true;
-                              });
-
-                              String url = "default";
-                              if(_selectedImage!=null) {
-                                url = await FirebaseCheck.uploadImage(user, _selectedImage);
-                                if(!url.startsWith("https://")){
-                                  Fluttertoast.showToast(msg: "Error in uploading image");
-                                  return;
-                                }
-                              }
-                              Map<String, dynamic> map = {
-                                'uid': user.uid,
-                                'mobile': _mobileController.text.trim(),
-                                'email': _emailController.text.trim().toLowerCase(),
-                                'name': _nameController.text.trim(),
-                                'image': url,
-                                'bio': "default",
-                                'address': "default",
-                                'zipcode': "default",
-                              };
-                              await FirebaseCheck.insertUser(map:map);
-                              Navigator.pushReplacement(context, CupertinoPageRoute(builder: (_) => MyCurrentLocationScreen()));
-                            }
-                          },
-                          child: Container(
-                            height: 50,
-                            color: mPrimaryDarkColor,
-                            child: Center(
-                              child: isLoading? CircularProgressIndicator(
-                                valueColor: AlwaysStoppedAnimation(Colors.white),
-                              ) : Text(
-                                "Continue",
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: InkWell(
+                              onTap: (){
+                                showDialog(context: context, builder: (_)=> makeImageChooser(context));
+                              },
+                              child: Text(
+                                "Select picture",
                                 style: googleBtnTextStyle.copyWith(
-                                  color: Colors.white,
+                                  color: mPrimaryDarkColor,
+                                  fontWeight: FontWeight.w100,
+                                  fontSize: 16,
+                                  decoration: TextDecoration.underline,
                                 ),
                               ),
                             ),
                           ),
                         ),
-                      )
-                    ],
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                          child: TextFormField(
+                            controller: _nameController,
+                            validator: (text){
+                              if(text.isEmpty){
+                                return 'Please enter your name';
+                              }
+                              return null;
+                            },
+                            decoration: InputDecoration(
+                              hintText: "e.g. Alex",
+                              labelText: "Name",
+                              border: OutlineInputBorder()
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                          child: TextFormField(
+                            readOnly: widget.isGoogle,
+                            controller: _emailController,
+                            validator: (text){
+                              if(text.isEmpty){
+                                return 'Please enter email';
+                              }
+                              if(!text.contains("@")){
+                                return 'Please enter valid email';
+                              }
+                              return null;
+                            },
+                            decoration: InputDecoration(
+                                hintText: "e.g. example@something.com",
+                                labelText: "Email",
+                                border: OutlineInputBorder()
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                          child: TextFormField(
+                            validator: (text){
+                              if(text.isEmpty){
+                                return 'Please enter mobile number';
+                              }
+                              if(text.length < 10){
+                                return 'Please enter valid mobile number';
+                              }
+                              return null;
+                            },
+                            controller: _mobileController,
+                            readOnly: !widget.isGoogle,
+                            decoration: InputDecoration(
+                                hintText: "e.g. 1234567890",
+                                labelText: "Mobile",
+                                prefix: Text("+91"),
+                                border: OutlineInputBorder()
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                          child: InkWell(
+                            onTap: isLoading? null :() async{
+                              if (_formKey.currentState.validate()) {
+                                setState(() {
+                                  isLoading = true;
+                                });
+
+                                String url = "default";
+                                if(_selectedImage!=null) {
+                                  url = await FirebaseCheck.uploadImage(user, _selectedImage);
+                                  if(!url.startsWith("https://")){
+                                    Fluttertoast.showToast(msg: "Error in uploading image");
+                                    return;
+                                  }
+                                }
+                                Map<String, dynamic> map = {
+                                  'uid': user.uid,
+                                  'mobile': _mobileController.text.trim(),
+                                  'email': _emailController.text.trim().toLowerCase(),
+                                  'name': _nameController.text.trim(),
+                                  'image': url,
+                                  'bio': "default",
+                                  'address': "default",
+                                  'zipcode': "default",
+                                };
+                                await FirebaseCheck.insertUser(map:map);
+                                Navigator.pushReplacement(context, CupertinoPageRoute(builder: (_) => MyCurrentLocationScreen()));
+                              }
+                            },
+                            child: Container(
+                              height: 50,
+                              color: mPrimaryDarkColor,
+                              child: Center(
+                                child: isLoading? CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation(Colors.white),
+                                ) : Text(
+                                  "Continue",
+                                  style: googleBtnTextStyle.copyWith(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
