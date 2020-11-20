@@ -1,7 +1,15 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:purana_bazzar/firebase_helper/firebase_login.dart';
+import 'package:purana_bazzar/firebase_helper/firebase_operations.dart';
 import 'package:purana_bazzar/screens/home_screen.dart';
+import 'package:purana_bazzar/screens/signup_screen.dart';
 import 'package:purana_bazzar/utils/constants.dart';
+
+import 'my_current_location_screen.dart';
 
 class OtpScreen extends StatefulWidget {
   final String mobile;
@@ -22,6 +30,12 @@ class _OtpScreenState extends State<OtpScreen> {
 
   TextEditingController currController = TextEditingController();
 
+  bool isFilled = false, isLoading = true, isCodeNotSent = true;
+  String smsCode;
+  String _message;
+  FirebaseAuth _auth;
+  String _verificationId;
+
   @override
   void dispose() {
     super.dispose();
@@ -38,7 +52,97 @@ class _OtpScreenState extends State<OtpScreen> {
     // TODO: implement initState
     super.initState();
     currController = controller1;
+    _auth = FirebaseAuth.instance;
+    _verifyPhoneNumber();
   }
+
+  void _verifyPhoneNumber() async {
+    setState(() {
+      _message = '';
+      isLoading = true;
+    });
+    final PhoneVerificationCompleted verificationCompleted =
+        (AuthCredential phoneAuthCredential) {
+
+      _signInWithPhoneNumber(credential: phoneAuthCredential);
+
+    };
+
+    final PhoneVerificationFailed verificationFailed =
+        (authException) {
+      setState(() {
+        isLoading = false;
+        _message =
+        'Phone number verification failed. Code: ${authException.code}. Message: ${authException.message}';
+      });
+      Fluttertoast.showToast(msg: _message);
+    };
+
+    final PhoneCodeSent codeSent =
+        (String verificationId, [int forceResendingToken]) async {
+      Fluttertoast.showToast(msg: "OTP sent");
+      setState(() {
+        isLoading = false;
+        isCodeNotSent = false;
+      });
+      _verificationId = verificationId;
+    };
+
+    final PhoneCodeAutoRetrievalTimeout codeAutoRetrievalTimeout =
+        (String verificationId) {
+      _verificationId = verificationId;
+    };
+
+    await _auth.verifyPhoneNumber(
+        phoneNumber: "+91"+widget.mobile,
+        timeout: const Duration(seconds: 5),
+        verificationCompleted: verificationCompleted,
+        verificationFailed: verificationFailed,
+        codeSent: codeSent,
+        codeAutoRetrievalTimeout: codeAutoRetrievalTimeout);
+  }
+
+  // Example code of how to sign in with phone.
+  void _signInWithPhoneNumber({AuthCredential credential}) async {
+    bool isOld = false;
+    print(smsCode);
+    setState(() {
+      isLoading = true;
+    });
+    AuthCredential authCredential;
+    if(smsCode == null){
+      authCredential = credential;
+    }else{
+      authCredential = PhoneAuthProvider.credential(
+        verificationId: _verificationId,
+        smsCode: this.smsCode,
+      );
+    }
+
+    Fluttertoast.showToast(msg: "Verification in progress...");
+    try {
+      UserCredential _results = await _auth.signInWithCredential(authCredential);
+      User user = _results.user;
+
+      setState(() {
+        if (user != null) {
+          _message = 'Successfully signed in';
+          matchOtp();
+        } else {
+          FirebaseLogin().onAuthStateChanged(context);
+          _message = 'Sign in failed';
+        }
+      });
+      Fluttertoast.showToast(msg: _message);
+
+    }on PlatformException catch(e){
+      setState(() {
+        isLoading = false;
+      });
+      print(e.message);
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -361,7 +465,14 @@ class _OtpScreenState extends State<OtpScreen> {
                                 ),
                                 MaterialButton(
                                     onPressed: () {
-                                      matchOtp();
+                                      if(isCodeNotSent){
+                                        Fluttertoast.showToast(msg: "Please wait");
+                                        return;
+                                      }
+                                      smsCode = "${controller1.text}${controller2.text}${controller3.text}${controller4.text}${controller5.text}${controller6.text}";
+                                      setState(() {});
+                                      _signInWithPhoneNumber();
+
                                     },
                                     child: Image.asset('assets/png/success.png', width: 25.0, height: 25.0)),
                               ],
@@ -459,7 +570,7 @@ class _OtpScreenState extends State<OtpScreen> {
                   icon: Icon(Icons.check),
                   onPressed: () {
                     Navigator.of(context).pop();
-                    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => HomeScreen()));
+                    FirebaseLogin().onAuthStateChanged(context, firebaseUser: _auth.currentUser);
                   })
             ],
           );

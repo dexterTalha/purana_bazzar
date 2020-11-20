@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 final Color mPrimaryColor = const Color(0xff6A92C8);
 final Color mPrimaryDarkColor = const Color(0xff647CA3);
 final Color googleTextColor = const Color(0xff717171);
+final String baseUrl = "http://pb.loftyinterior.com/new_api/";
 
 final TextStyle splashTextStyle22 = GoogleFonts.mavenPro(
   color: mPrimaryDarkColor,

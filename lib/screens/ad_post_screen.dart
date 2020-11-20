@@ -98,7 +98,7 @@ class _AdPostScreenState extends State<AdPostScreen> {
                     height: 20,
                   ),
                   CarouselSlider.builder(
-                    itemCount: images.length + 1,
+                    itemCount: images.length == 4?images.length:images.length + 1,
                     itemBuilder: (c, index) {
                       return Container(
                         height: 120,

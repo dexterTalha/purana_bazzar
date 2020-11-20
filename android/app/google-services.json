@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "167558303144",
+    "firebase_url": "https://puranabazzar-dbc2e.firebaseio.com",
+    "project_id": "puranabazzar-dbc2e",
+    "storage_bucket": "puranabazzar-dbc2e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:167558303144:android:bb25ec1afbf21d0c01a19d",
+        "android_client_info": {
+          "package_name": "com.cyl18f.purana_bazzar"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "167558303144-91e4urmkeebs2r7ps5ppp39hmjrpu0ps.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cyl18f.purana_bazzar",
+            "certificate_hash": "75ee8c2729eb8a9d098a75b312388bb8b6f2fc8c"
+          }
+        },
+        {
+          "client_id": "167558303144-vlitfv8r8t76unbfvf9d1ssfemttjejh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD3eYE6LyeF15JvUx_7q-1FyiqhMepHVNA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "167558303144-vlitfv8r8t76unbfvf9d1ssfemttjejh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

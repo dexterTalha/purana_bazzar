@@ -19,14 +19,7 @@ class _PostedAdsState extends State<PostedAds> with AutomaticKeepAliveClientMixi
       child: GridView.count(
         crossAxisCount: 2,
         children: [
-          AdViewBlock(
-            isMyAdd: true,
-            id: 1,
-          ),
-          AdViewBlock(
-            isMyAdd: true,
-            id: 2,
-          ),
+
         ],
       ),
     );

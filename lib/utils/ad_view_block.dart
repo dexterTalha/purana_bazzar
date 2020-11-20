@@ -1,15 +1,19 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:like_button/like_button.dart';
+import 'package:purana_bazzar/models/ad_model.dart';
 import 'package:purana_bazzar/screens/product_detail_screen.dart';
 import 'package:purana_bazzar/utils/constants.dart';
+import 'package:shimmer/shimmer.dart';
 
 class AdViewBlock extends StatelessWidget {
-  final int id;
+  final AdModel ad;
   final bool isMyAdd;
+  final String type;
 
-  AdViewBlock({this.id, this.isMyAdd = false});
+  AdViewBlock({this.ad, this.isMyAdd = false, this.type});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +23,7 @@ class AdViewBlock extends StatelessWidget {
           context,
           CupertinoPageRoute(
             builder: (_) => ProductDetailScreen(
-              id: id,
+              id: int.parse(ad.id),
             ),
           ),
         );
@@ -42,12 +46,12 @@ class AdViewBlock extends StatelessWidget {
                       child: ClipRRect(
                         borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10)),
                         child: Hero(
-                          tag: "Product$id",
-                          child: Image.asset(
-                            "assets/png/testing.png",
+                          tag: "Product${ad.id}$type",
+                          child: CachedNetworkImage(
+                            imageUrl: ad.images[0],
                             height: 210,
                             width: 180,
-                            fit: BoxFit.contain,
+                            fit: BoxFit.cover,
                           ),
                         ),
                       ),
@@ -58,7 +62,7 @@ class AdViewBlock extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10),
                       child: Text(
-                        "Testing product",
+                        ad.title,
                         style: googleBtnTextStyle.copyWith(fontSize: 15),
                       ),
                     ),
@@ -68,7 +72,7 @@ class AdViewBlock extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10),
                       child: Text(
-                        "\u20B9 250",
+                        "\u20B9 ${ad.price}",
                         style: googleBtnTextStyle.copyWith(fontSize: 13),
                       ),
                     ),
@@ -88,7 +92,7 @@ class AdViewBlock extends StatelessWidget {
                             width: 5,
                           ),
                           Text(
-                            "address...",
+                            ad.address,
                             style: googleBtnTextStyle.copyWith(fontSize: 13),
                           )
                         ],
@@ -98,57 +102,118 @@ class AdViewBlock extends StatelessWidget {
                         ? Container(
                             height: 10,
                           )
-                        : GestureDetector(
-                            onTap: () {
-                              Fluttertoast.showToast(msg: "Edit");
-                            },
-                            child: Container(
-                              width: 180,
-                              margin: const EdgeInsets.only(top: 10),
-                              padding: const EdgeInsets.all(4),
-                              decoration: BoxDecoration(
-                                color: mPrimaryColor,
-                                borderRadius: BorderRadius.only(
-                                  bottomLeft: Radius.circular(4),
-                                  bottomRight: Radius.circular(4),
+                        : Row(
+                          children: [
+                            Expanded(
+                              child: GestureDetector(
+                                  onTap: () {
+                                    Fluttertoast.showToast(msg: "Edit");
+                                  },
+                                  child: Container(
+                                    margin: const EdgeInsets.only(top: 10),
+                                    padding: const EdgeInsets.all(4),
+                                    decoration: BoxDecoration(
+                                      color: mPrimaryColor,
+                                      borderRadius: BorderRadius.only(
+                                        bottomLeft: Radius.circular(4),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.edit,
+                                          size: 20,
+                                          color: Colors.white,
+                                        ),
+                                        SizedBox(
+                                          width: 10,
+                                        ),
+                                        Text(
+                                          "Edit",
+                                          style: googleBtnTextStyle.copyWith(fontSize: 14, color: Colors.white),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                            ),
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () {
+                                  Fluttertoast.showToast(msg: "Sold");
+                                },
+                                child: Container(
+                                  margin: const EdgeInsets.only(top: 10),
+                                  padding: const EdgeInsets.all(4),
+                                  decoration: BoxDecoration(
+                                    color: Colors.redAccent,
+                                    borderRadius: BorderRadius.only(
+                                      bottomRight: Radius.circular(4),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.check,
+                                        size: 20,
+                                        color: Colors.white,
+                                      ),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                      Text(
+                                        "Sold",
+                                        style: googleBtnTextStyle.copyWith(fontSize: 14, color: Colors.white),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.edit,
-                                    size: 20,
-                                    color: Colors.white,
-                                  ),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  Text(
-                                    "Edit",
-                                    style: googleBtnTextStyle.copyWith(fontSize: 14, color: Colors.white),
-                                  ),
-                                ],
-                              ),
                             ),
-                          ),
+                          ],
+                        ),
                   ],
                 ),
               ),
               Positioned(
                 top: 10,
                 right: 10,
-                child: LikeButton(
-                  animationDuration: Duration(milliseconds: 600),
-                  likeBuilder: (bool isLiked) {
-                    return Icon(
-                      Icons.favorite,
-                      color: isLiked ? Colors.deepPurpleAccent : Colors.grey,
-                      size: 30,
-                    );
-                  },
+                left: 10,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                     ad.isPrime?Container(
+                       decoration: BoxDecoration(
+                         color: Colors.green
+                       ),
+                       child: Padding(
+                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                         child: Shimmer.fromColors(
+                           period: Duration(milliseconds: 600),
+                           baseColor: Colors.white,
+                           highlightColor: Colors.white.withAlpha(20),
+                           child: Text(
+                             "Premium",
+                             style: googleBtnTextStyle.copyWith(color: Colors.white, fontSize: 14),
+                           ),
+                         ),
+                       ),
+                     ):Container(),
+                    LikeButton(
+                      animationDuration: Duration(milliseconds: 600),
+                      likeBuilder: (bool isLiked) {
+                        return Icon(
+                          Icons.favorite,
+                          color: isLiked ? Colors.deepPurpleAccent : Colors.grey,
+                          size: 30,
+                        );
+                      },
+                    ),
+                  ],
                 ),
-              )
+              ),
             ],
           ),
         ),

@@ -1,7 +1,12 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart';
+import 'package:purana_bazzar/firebase_helper/firebase_login.dart';
 import 'package:purana_bazzar/screens/home_screen.dart';
 import 'package:purana_bazzar/screens/otp_screen.dart';
+import 'package:purana_bazzar/screens/signup_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../utils/slide_fade_transition.dart';
 import '../utils/constants.dart';
@@ -11,10 +16,11 @@ class LoginScreen extends StatefulWidget {
   _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-
+class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin{
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _mobileController = TextEditingController();
+  AnimationController rotationController;
+  bool isAuthenticating = false;
   _launchURL() async {
     const url = 'https://flutter.dev';
     if (await canLaunch(url)) {
@@ -25,14 +31,26 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   @override
+  void initState() {
+    rotationController = AnimationController(duration: const Duration(milliseconds: 500), vsync: this)..addStatusListener((status) {
+      if(status == AnimationStatus.completed){
+        rotationController.repeat();
+      }
+    });
+    super.initState();
+  }
+
+  @override
   void dispose() {
     _mobileController.dispose();
+    rotationController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.transparent,
@@ -84,28 +102,30 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: RichText(
                   textAlign: TextAlign.center,
                   maxLines: 2,
-                    text: TextSpan(
-                  children: [
-                    TextSpan(
-                      text: "By Logging in you will agree ",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: "By Logging in you will agree ",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 18,
+                        ),
                       ),
-                    ),
-                    TextSpan(
-                      text: "Terms & Condition",
-                      recognizer: TapGestureRecognizer()..onTap = () async{
-                        await _launchURL();
-                      },
-                      style: TextStyle(
-                        color: Colors.red,
-                        fontSize: 18,
-                        decoration: TextDecoration.underline,
-                      ),
-                    )
-                  ],
-                )),
+                      TextSpan(
+                        text: "Terms & Condition",
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () async {
+                            await _launchURL();
+                          },
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontSize: 18,
+                          decoration: TextDecoration.underline,
+                        ),
+                      )
+                    ],
+                  ),
+                ),
               ),
             )
           ],
@@ -115,11 +135,28 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget buildGoogleButton(Size size) {
+
     return Padding(
       padding: const EdgeInsets.only(left: 20, right: 20),
       child: InkWell(
-        onTap: () {
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=>HomeScreen()));
+        onTap: isAuthenticating? null : () async{
+          setState(() {
+            isAuthenticating = true;
+          });
+          rotationController.forward();
+          bool isLogin = await FirebaseLogin().signInWithGoogle();
+          setState(() {
+            isAuthenticating = false;
+          });
+          rotationController.stop();
+          rotationController.reset();
+          if(isLogin){
+            Fluttertoast.showToast(msg: "Success");
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => SignUpScreen(isGoogle: true,)));
+          }else{
+            Fluttertoast.showToast(msg: "Error");
+          }
+
         },
         splashColor: mPrimaryColor,
         child: Card(
@@ -136,18 +173,26 @@ class _LoginScreenState extends State<LoginScreen> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(
-                    left: 15,
+                  padding: EdgeInsets.only(
+                    left: isAuthenticating?0:15,
                   ),
-                  child: Image.asset(
-                    'assets/png/google_icon.png',
-                    height: 35,
-                    width: 35,
+                  child: RotationTransition(
+                    turns: Tween(begin: 0.0, end: 1.0).animate(rotationController),
+                    child: AnimatedContainer(
+                      width: isAuthenticating? size.width *0.84:35,
+                      duration: Duration(milliseconds: 800),
+                      child: Image.asset(
+                        'assets/png/google_icon.png',
+                        height: 35,
+                        width: 35,
+                      ),
+                    ),
                   ),
                 ),
                 Expanded(
+                  //flex:isAuthenticating ? 0 : 1,
                   child: Text(
-                    "Continue with Google",
+                    isAuthenticating ?"":"Continue with Google",
                     textAlign: TextAlign.center,
                     style: googleBtnTextStyle,
                   ),
@@ -171,10 +216,11 @@ class _LoginScreenState extends State<LoginScreen> {
               mainAxisSize: MainAxisSize.max,
               children: [
                 Expanded(
-                    child: Divider(
-                  thickness: 0.8,
-                  color: Colors.white,
-                )),
+                  child: Divider(
+                    thickness: 0.8,
+                    color: Colors.white,
+                  ),
+                ),
                 Padding(
                   padding: const EdgeInsets.all(4.0),
                   child: Text(
@@ -219,20 +265,18 @@ class _LoginScreenState extends State<LoginScreen> {
                     return null;
                   },
                   style: TextStyle(color: Colors.black, fontSize: 18),
-                  validator: (text){
-                    if(text.isEmpty){
+                  validator: (text) {
+                    if (text.isEmpty) {
                       return 'Please enter mobile number';
                     }
-                    if(text.length < 10){
+                    if (text.length < 10) {
                       return 'Please enter valid mobile number';
                     }
                     return null;
                   },
                   controller: _mobileController,
                   decoration: InputDecoration(
-                    errorStyle: TextStyle(
-                      backgroundColor: Colors.transparent
-                    ),
+                      errorStyle: TextStyle(backgroundColor: Colors.transparent),
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(4)),
                       hintText: "Mobile Number",
                       prefixIcon: Icon(Icons.phone_iphone),
@@ -245,8 +289,16 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               InkWell(
                 onTap: () {
-                  if(_formKey.currentState.validate()){
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=>OtpScreen(mobile: _mobileController.text.trim(),)));
+                  //FirebaseLogin().signOut();
+                  if (_formKey.currentState.validate()) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => OtpScreen(
+                          mobile: _mobileController.text.trim(),
+                        ),
+                      ),
+                    );
                   }
                 },
                 splashColor: Colors.white,

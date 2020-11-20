@@ -18,8 +18,7 @@ class _FavouriteAdsState extends State<FavouriteAds> with AutomaticKeepAliveClie
       child: GridView.count(
 crossAxisCount: 2,
         children: [
-           AdViewBlock(isMyAdd: false,id: 4,),
-           AdViewBlock(isMyAdd: false,id: 3,),
+
         ],
       ),
     );

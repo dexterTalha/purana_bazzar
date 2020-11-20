@@ -1,8 +1,13 @@
 import 'dart:async';
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:purana_bazzar/firebase_helper/firebase_login.dart';
 import 'package:purana_bazzar/helper/dark_theme_provider.dart';
 import 'package:purana_bazzar/helper/shared_pref.dart';
+import 'package:purana_bazzar/screens/home_screen.dart';
 import 'package:purana_bazzar/screens/login_screen.dart';
 import 'package:purana_bazzar/screens/walkthrough_screen.dart';
 import 'package:purana_bazzar/utils/fancy_background_app.dart';
@@ -18,6 +23,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   Animation<double> _animation, _animationFade;
   Animation<Offset> _animationSlide;
   DarkThemeProvider themeChangeProvider = new DarkThemeProvider();
+  User currentUser;
 
   void getCurrentAppTheme() async {
     themeChangeProvider.darkTheme =
@@ -27,6 +33,8 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   @override
   void initState() {
     super.initState();
+
+    currentUser = FirebaseAuth.instance.currentUser;
     getCurrentAppTheme();
     _animationController = AnimationController(
       vsync: this,
@@ -48,14 +56,17 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   }
 
   Future<void> handlerTimer() async{
-    bool isOld = await SharedPref().isOld();
+
+    User user = FirebaseAuth.instance.currentUser;
     Timer(Duration(milliseconds: 1500), (){
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => isOld ? FancyBackgroundApp(child: LoginScreen(),):WalkThroughScreen()));
+      //Navigator.pushReplacement(context, MateialPageRoute(builder: (_) => isOld ? FancyBackgroundApp(child: currentUser == null ? LoginScreen() : HomeScreen(),):WalkThroughScreen()));
+      FirebaseLogin().onAuthStateChanged(context, firebaseUser: user);
     });
   }
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(

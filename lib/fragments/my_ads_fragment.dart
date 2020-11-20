@@ -29,8 +29,6 @@ class _MyAdsFragmentState extends State<MyAdsFragment> with SingleTickerProvider
     super.dispose();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -52,6 +50,18 @@ class _MyAdsFragmentState extends State<MyAdsFragment> with SingleTickerProvider
               });
             }),
           ),
+
+          ListTile(
+            onTap: () {
+
+            },
+            title: Text(
+              "View Packages",
+              textAlign: TextAlign.center,
+              style: googleBtnTextStyle.copyWith(color: mPrimaryDarkColor),
+            ),
+          ),
+
           Expanded(
             child: PageView.builder(
               physics: NeverScrollableScrollPhysics(),
