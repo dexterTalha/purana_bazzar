@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:purana_bazzar/models/ad_model.dart';
+import '../models/ad_model.dart';
 
 class FavoritesStorage {
 
@@ -21,9 +22,6 @@ class FavoritesStorage {
 
       // Read the file
       String json =  jsonEncode(favoritesList);
-
-      print("JSON writing to file: " + json);
-
       await file.writeAsString(json, mode: FileMode.write);
 
       return true;
@@ -36,24 +34,23 @@ class FavoritesStorage {
   }
 
   Future<List<AdModel>> readFavorites() async {
+    List<AdModel> favs = [];
     try {
       final file = await _localFile;
 
       // Read the file
       String jsonString = await file.readAsString();
 
-      print("JSON reading from file: " + jsonString);
-
       Iterable jsonMap = jsonDecode(jsonString);
 
-      List<AdModel> favs = jsonMap.map((parsedJson) => AdModel.fromJson(parsedJson)).toList();
+      favs = jsonMap.map((parsedJson) => AdModel.fromJson(parsedJson)).toList();
 
       return favs;
 
     } catch (e) {
-      print('error');
+      print('error : ${e.toString()}');
     }
 
-    return List<AdModel>();
+    return favs;
   }
 }

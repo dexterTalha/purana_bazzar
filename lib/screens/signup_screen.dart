@@ -5,11 +5,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:purana_bazzar/firebase_helper/firebase_operations.dart';
-import 'package:purana_bazzar/helper/helper.dart';
-import 'package:purana_bazzar/screens/login_screen.dart';
-import 'package:purana_bazzar/screens/my_current_location_screen.dart';
-import 'package:purana_bazzar/utils/constants.dart';
+import '../firebase_helper/firebase_operations.dart';
+import '../helper/helper.dart';
+import '../screens/login_screen.dart';
+import '../screens/my_current_location_screen.dart';
+import '../utils/constants.dart';
 
 class SignUpScreen extends StatefulWidget {
 

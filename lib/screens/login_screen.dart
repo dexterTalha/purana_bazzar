@@ -5,10 +5,10 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
-import 'package:purana_bazzar/firebase_helper/firebase_login.dart';
-import 'package:purana_bazzar/screens/home_screen.dart';
-import 'package:purana_bazzar/screens/otp_screen.dart';
-import 'package:purana_bazzar/screens/signup_screen.dart';
+import '../firebase_helper/firebase_login.dart';
+import '../screens/home_screen.dart';
+import '../screens/otp_screen.dart';
+import '../screens/signup_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../utils/slide_fade_transition.dart';
 import '../utils/constants.dart';
@@ -279,6 +279,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                   controller: _mobileController,
                   decoration: InputDecoration(
                       errorStyle: TextStyle(backgroundColor: Colors.transparent),
+
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(4)),
                       hintText: "Mobile Number",
                       prefixIcon: Icon(Icons.phone_iphone),

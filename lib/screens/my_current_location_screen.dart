@@ -126,6 +126,7 @@ class _MyCurrentLocationScreenState extends State<MyCurrentLocationScreen> {
           height: size.height,
           width: size.width,
           child: Column(
+            mainAxisSize: MainAxisSize.max,
             children: <Widget>[
               AnimatedContainer(
                 duration: _duration,

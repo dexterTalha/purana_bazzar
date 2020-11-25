@@ -6,55 +6,32 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:purana_bazzar/models/slider_model.dart';
+import '../models/slider_model.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'constants.dart';
 
 class AdSliderBlock extends StatefulWidget {
+
+  final List<AdSliderModel> ads;
+
+
+  AdSliderBlock({this.ads});
+
   @override
   _AdSliderBlockState createState() => _AdSliderBlockState();
 }
 
 class _AdSliderBlockState extends State<AdSliderBlock> {
   int _current = 0;
-  List<AdSliderModel> ads = [];
-  bool isAdLoading = true;
 
-
-  @override
-  initState() {
-    super.initState();
-    _getAdSlider();
-  }
-
-  Future<void> _getAdSlider() async {
-    ads = [];
-    final url = "${baseUrl}get_slider.php";
-    final dio = Dio();
-    Response response = await dio.get(url);
-    var data = jsonDecode(response.data);
-    bool status = data['status'];
-    if (!status) {
-      Fluttertoast.showToast(msg: "Error");
-      return;
-    }
-    for (Map<String, dynamic> map in data['data']) {
-      ads.add(AdSliderModel.fromJson(map));
-    }
-    if (this.mounted) {
-      setState(() {
-        isAdLoading = false;
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
-    return isAdLoading ? CupertinoActivityIndicator() : Container(
+    return Container(
       height: 200,
       width: MediaQuery.of(context).size.width,
-      child: ads.length <= 0
+      child: widget.ads.length <= 0
           ? Center(
               child: Text("No Ads found"),
             )
@@ -62,10 +39,10 @@ class _AdSliderBlockState extends State<AdSliderBlock> {
               fit: StackFit.expand,
               children: [
                 CarouselSlider(
-                  items: List.generate(ads.length, (index) {
+                  items: List.generate(widget.ads.length, (index) {
                     return GestureDetector(
                       onTap: () async {
-                        String url = ads[index].url;
+                        String url = widget.ads[index].url;
                         if (url != null) {
                           if (await canLaunch(url)) {
                             await launch(url);
@@ -76,7 +53,7 @@ class _AdSliderBlockState extends State<AdSliderBlock> {
                       },
                       child: Container(
                         child: CachedNetworkImage(
-                          imageUrl: ads[index].image,
+                          imageUrl: widget.ads[index].image,
                           fit: BoxFit.cover,
                           width: double.infinity,
                         ),
@@ -103,7 +80,7 @@ class _AdSliderBlockState extends State<AdSliderBlock> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: List.generate(
-                      ads.length,
+                      widget.ads.length,
                       (index) => Container(
                         width: 15.0,
                         height: 15.0,

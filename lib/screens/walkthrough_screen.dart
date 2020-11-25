@@ -1,10 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:purana_bazzar/helper/shared_pref.dart';
-import 'package:purana_bazzar/screens/login_screen.dart';
-import 'package:purana_bazzar/utils/constants.dart';
-import 'package:purana_bazzar/utils/fancy_background_app.dart';
+import '../helper/shared_pref.dart';
+import '../screens/login_screen.dart';
+import '../utils/constants.dart';
+import '../utils/fancy_background_app.dart';
 
 class WalkThroughScreen extends StatefulWidget {
   @override

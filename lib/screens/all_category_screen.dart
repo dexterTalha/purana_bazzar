@@ -4,9 +4,9 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:purana_bazzar/models/category_model.dart';
-import 'package:purana_bazzar/utils/category_block.dart';
-import 'package:purana_bazzar/utils/constants.dart';
+import '../models/category_model.dart';
+import '../utils/category_block.dart';
+import '../utils/constants.dart';
 
 class AllCategoryScreen extends StatefulWidget {
 

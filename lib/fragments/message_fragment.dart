@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:purana_bazzar/fragments/messages/all_messages.dart';
-import 'package:purana_bazzar/fragments/messages/buying_message.dart';
-import 'package:purana_bazzar/fragments/messages/selling_message.dart';
-import 'package:purana_bazzar/utils/constants.dart';
+import '../fragments/messages/all_messages.dart';
+import '../fragments/messages/buying_message.dart';
+import '../fragments/messages/selling_message.dart';
+import '../utils/constants.dart';
 
 class MessageFragment extends StatefulWidget {
   @override
@@ -12,7 +12,7 @@ class MessageFragment extends StatefulWidget {
 }
 
 class _MessageFragmentState extends State<MessageFragment> with SingleTickerProviderStateMixin {
-  final _messagePages = [AllMessagesFragment(), BuyingMessageFragment(), SellingMessageFragment()];
+  final _messagePages = [AllMessagesFragment(), BuyingMessagesFragment(), SellingMessagesFragment()];
 
   int _currentPage = 0;
   TabController _tabController;

@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:purana_bazzar/models/firebase_user_model.dart';
 import '../helper/shared_pref.dart';
 import '../utils/constants.dart';
 
@@ -18,6 +19,14 @@ class FirebaseCheck {
     final data = await users.doc(uid).get();
     print("is old user : ${data.exists}");
     return data.exists;
+  }
+
+  Future<FirebaseUserModel> getUserDetails(String uid) async{
+    try {
+      return FirebaseUserModel.fromSnapshot(await FirebaseFirestore.instance.collection("Users").doc(uid).get());
+    }catch(e){
+      return null;
+    }
   }
 
   static Future<bool> checkLocation({uid}) async {

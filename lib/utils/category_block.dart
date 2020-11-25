@@ -1,9 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:purana_bazzar/models/category_model.dart';
-import 'package:purana_bazzar/screens/ad_post_screen.dart';
-import 'package:purana_bazzar/utils/constants.dart';
+import '../models/category_model.dart';
+import '../screens/ad_post_screen.dart';
+import '../screens/property_ad_post_screen.dart';
+import '../utils/constants.dart';
 
 class CategoryBlock extends StatelessWidget {
 
@@ -82,10 +83,21 @@ class CategoryBlock extends StatelessWidget {
             (index) => ListTile(
               onTap: () {
                 if (isPostAd) {
-                  Navigator.pushReplacement(context, CupertinoPageRoute<Null>(builder: (_) => AdPostScreen()));
-                }else{
-
-                }
+                  Navigator.pushReplacement(
+                    context,
+                    CupertinoPageRoute<Null>(
+                      builder: (_) => parent.id == "6"
+                          ? PropertyAdPostScreen(
+                              child: childrenCat[index],
+                              parent: parent,
+                            )
+                          : AdPostScreen(
+                              child: childrenCat[index],
+                              parent: parent,
+                            ),
+                    ),
+                  );
+                } else {}
               },
               title: Text(childrenCat[index].name),
             ),

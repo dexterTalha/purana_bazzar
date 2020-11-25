@@ -6,15 +6,20 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:purana_bazzar/helper/shared_pref.dart';
-import 'package:purana_bazzar/models/ad_model.dart';
-import 'package:purana_bazzar/models/category_model.dart';
-import 'package:purana_bazzar/screens/choose_location_screen.dart';
-import 'package:purana_bazzar/utils/ad_slider.dart';
-import 'package:purana_bazzar/utils/ad_view_block.dart';
-import 'package:purana_bazzar/utils/category_block.dart';
-import 'package:purana_bazzar/utils/constants.dart';
-import 'package:purana_bazzar/utils/my_separator.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:purana_bazzar/models/slider_model.dart';
+import 'package:purana_bazzar/utils/service_block.dart';
+import 'package:shimmer/shimmer.dart';
+import '../helper/favourites_helper.dart';
+import '../helper/shared_pref.dart';
+import '../models/ad_model.dart';
+import '../models/category_model.dart';
+import '../screens/choose_location_screen.dart';
+import '../utils/ad_slider.dart';
+import '../utils/ad_view_block.dart';
+import '../utils/category_block.dart';
+import '../utils/constants.dart';
+import '../utils/my_separator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeFragment extends StatefulWidget {
@@ -23,23 +28,35 @@ class HomeFragment extends StatefulWidget {
 }
 
 class _HomeFragmentState extends State<HomeFragment> {
-
   List<CategoryModel> parentCategory = [], childCategory = [];
-  bool isCatLoading = true, isAddressLoading = true, isProductLoading = true;
+  bool isCatLoading = true, isAddressLoading = true, isProductLoading = true, isAdLoading = true;
   String area, city, pincode;
   LatLng l;
   List<AdModel> trending = [], latest = [], electronic = [], properties = [], services = [];
   List<List<AdModel>> allList = [];
-  final List<String> headings = [
-    "Trending",
-    "All Latest",
-    "Latest Electronics",
-    "Latest Properties",
-    "Services Near You"
-  ];
+  final AdsFavorites fav = AdsFavorites();
+  List<AdModel> favAds = [];
+  final List<String> headings = ["Trending", "All Latest", "Latest Electronics", "Latest Properties"];
+
+  RefreshController _refreshController = RefreshController(initialRefresh: false);
+
+
+  void _onRefresh() async{
+    // monitor network fetch
+    await Future.delayed(Duration(milliseconds: 1000));
+    setState(() {
+      isCatLoading = true; isAddressLoading = true; isProductLoading = true;
+    });
+    _getAddress();
+    await _getCategories();
+    await _getAllProducts();
+    _refreshController.refreshCompleted();
+  }
+
   @override
   void initState() {
     super.initState();
+    _getAdSlider();
     _getAddress();
     _getCategories();
     _getAllProducts();
@@ -53,7 +70,7 @@ class _HomeFragmentState extends State<HomeFragment> {
     Response response = await dio.get(url);
     var data = jsonDecode(response.data);
     bool status = data['status'];
-    if(!status){
+    if (!status) {
       if (this.mounted) {
         setState(() {
           isCatLoading = false;
@@ -62,12 +79,11 @@ class _HomeFragmentState extends State<HomeFragment> {
       Fluttertoast.showToast(msg: "Error in loading categories! Pull to refresh");
       return;
     }
-    for(Map<String, dynamic> map in data['data']){
-        parentCategory.add(CategoryModel.fromJson(map));
+    for (Map<String, dynamic> map in data['data']) {
+      parentCategory.add(CategoryModel.fromJson(map));
     }
     for (int i = 0; i < parentCategory.length; i++) {
-      for (Map childCat in data['data'][i]["sub"])
-        childCategory.add(CategoryModel.fromJson(childCat));
+      for (Map childCat in data['data'][i]["sub"]) childCategory.add(CategoryModel.fromJson(childCat));
     }
 
     if (this.mounted) {
@@ -75,7 +91,6 @@ class _HomeFragmentState extends State<HomeFragment> {
         isCatLoading = false;
       });
     }
-
   }
 
   Future<void> _getAllProducts() async {
@@ -91,7 +106,7 @@ class _HomeFragmentState extends State<HomeFragment> {
     Response response = await dio.get(url);
     var data = response.data;
     bool status = data['status'];
-    if(!status){
+    if (!status) {
       if (this.mounted) {
         setState(() {
           isProductLoading = false;
@@ -100,7 +115,7 @@ class _HomeFragmentState extends State<HomeFragment> {
       Fluttertoast.showToast(msg: "Error in loading products! Pull to refresh");
       return;
     }
-    for(Map<String, dynamic> map in data['data']){
+    for (Map<String, dynamic> map in data['data']) {
       tempList.add(AdModel.fromJson(map));
     }
 
@@ -126,7 +141,7 @@ class _HomeFragmentState extends State<HomeFragment> {
   }
 
   getRandomElement(List<AdModel> list) {
-    int index = 0;
+
     list.forEach((element) {
       final random = new Random();
       var i = random.nextInt(list.length);
@@ -134,21 +149,21 @@ class _HomeFragmentState extends State<HomeFragment> {
         if (trending.length <= 0) {
           trending.add(list[i]);
         } else {
-          if (trending[index].id != element.id) {
+          if (trending.any((element) => element.id != list[i].id)) {
             trending.add(list[i]);
-            index++;
+
           }
         }
-
       } else {
         return;
       }
     });
   }
 
-  void _getAddress(){
+  void _getAddress() async{
+    favAds = await fav.readAllFavorites();
     SharedPreferences preferences;
-    SharedPreferences.getInstance().then((value){
+    SharedPreferences.getInstance().then((value) {
       preferences = value;
       pincode = preferences.getString(SharedPref.PIN);
       area = preferences.getString(SharedPref.AREA) ?? preferences.getString(SharedPref.CITY);
@@ -163,162 +178,237 @@ class _HomeFragmentState extends State<HomeFragment> {
       }
     });
   }
+  List<AdSliderModel> ads = [];
+  Future<void> _getAdSlider() async {
+    ads = [];
+    final url = "${baseUrl}get_slider.php";
+    final dio = Dio();
+    Response response = await dio.get(url);
+    var data = jsonDecode(response.data);
+    bool status = data['status'];
+    if (!status) {
+      Fluttertoast.showToast(msg: "Error");
+      return;
+    }
+    for (Map<String, dynamic> map in data['data']) {
+      ads.add(AdSliderModel.fromJson(map));
+    }
+    if (this.mounted) {
+      setState(() {
+        isAdLoading = false;
+      });
+    }
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: ListView(
-        physics: BouncingScrollPhysics(),
-        children: [
-          AdSliderBlock(),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-                  child: Image.asset(
-                    "assets/png/map_icon.png",
-                    height: 30,
-                    width: 30,
-                  ),
-                ),
-                SizedBox(
-                  width: 5,
-                ),
-                Expanded(
-                  child: Container(
-                    height: 70,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(isAddressLoading?"Loading...":area, style: googleBtnTextStyle.copyWith(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold),),
-                        SizedBox(height: 5,),
-                        Text(isAddressLoading?"Loading...":"$city, $pincode"),
+      child: SmartRefresher(
+        controller: _refreshController,
+        onRefresh: _onRefresh,
 
-                      ],
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 5.0),
-                  child: Center(
-                    child: InkWell(
-                      splashColor: mPrimaryColor.withOpacity(0.3),
-                      onTap: () {
-                        Navigator.pushReplacement(
-                        context, MaterialPageRoute(
-                        builder: (_) => ChooseLocationScreen(latLng: l,)
-                    ));
-                      },
-                      onLongPress: () {
-                        Fluttertoast.showToast(
-                            msg: "Change your location");
-                      },
-                      child: Container(
-                        height: 30,
-                        width: 70,
-                        decoration: BoxDecoration(
-                            border: Border.all(color: mPrimaryColor)
-                        ),
-                        child: Center(child: Text("Change",
-                          style: TextStyle(
-                              color: mPrimaryColor, fontSize: 10),)),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8.0, left: 30),
-            child: MySeparator(),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 10, left: 20),
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 15),
+        enablePullDown: true,
+        header: WaterDropMaterialHeader(),
+        child: ListView(
+
+          children: [
+            isAdLoading? Shimmer.fromColors(
+              period: Duration(milliseconds: 600),
+              baseColor: mPrimaryColor,
+              highlightColor: mPrimaryColor.withAlpha(20),
+              child: Container(
+                height: 200,
+                width: MediaQuery.of(context).size.width,
+                color: mPrimaryColor,
+              ),
+            ) : AdSliderBlock(ads: ads,),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                    child: Image.asset(
+                      "assets/png/map_icon.png",
+                      height: 30,
+                      width: 30,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 5,
+                  ),
                   Expanded(
-                    child: Text(
-                      "Menu",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                    child: Container(
+                      height: 70,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            isAddressLoading ? "Loading..." : area,
+                            style: googleBtnTextStyle.copyWith(color: Colors.black, fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          Text(isAddressLoading ? "Loading..." : "$city, $pincode"),
+                        ],
                       ),
                     ),
                   ),
-
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 5.0),
+                    child: Center(
+                      child: InkWell(
+                        splashColor: mPrimaryColor.withOpacity(0.3),
+                        onTap: () {
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => ChooseLocationScreen(
+                                        latLng: l,
+                                      )));
+                        },
+                        onLongPress: () {
+                          Fluttertoast.showToast(msg: "Change your location");
+                        },
+                        child: Container(
+                          height: 30,
+                          width: 70,
+                          decoration: BoxDecoration(border: Border.all(color: mPrimaryColor)),
+                          child: Center(
+                              child: Text(
+                            "Change",
+                            style: TextStyle(color: mPrimaryColor, fontSize: 10),
+                          )),
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  stops: [0.015, 0.015],
-                  colors: [Color.fromRGBO(209, 2, 99, 1), Colors.white],
+            ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8.0, left: 30),
+              child: MySeparator(),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 10, left: 20),
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 15),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Expanded(
+                      child: Text(
+                        "Menu",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    stops: [0.015, 0.015],
+                    colors: [Color.fromRGBO(209, 2, 99, 1), Colors.white],
+                  ),
                 ),
               ),
             ),
-          ),
-
-          Padding(
-            padding: const EdgeInsets.only(top: 10.0, left: 5),
-            child: isCatLoading
-                ? CupertinoActivityIndicator()
-                : GridView.builder(
-                    shrinkWrap: true,
-                    scrollDirection: Axis.vertical,
-                    physics: NeverScrollableScrollPhysics(),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 4,
-                      childAspectRatio: 1.3
-                    ),
-                    itemCount: parentCategory.length,
-                    itemBuilder: (_, index) {
-                      if (parentCategory.length <= 0) {
-                        print("no data");
-                        return Center(
-                          child: Text(
-                            "No Categories",
-                            style: googleBtnTextStyle,
-                          ),
+            Padding(
+              padding: const EdgeInsets.only(top: 10.0, left: 5),
+              child: isCatLoading
+                  ? CupertinoActivityIndicator()
+                  : GridView.builder(
+                      shrinkWrap: true,
+                      scrollDirection: Axis.vertical,
+                      physics: NeverScrollableScrollPhysics(),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4, ),
+                      itemCount: parentCategory.length,
+                      itemBuilder: (_, index) {
+                        if (parentCategory.length <= 0) {
+                          print("no data");
+                          return Center(
+                            child: Text(
+                              "No Categories",
+                              style: googleBtnTextStyle,
+                            ),
+                          );
+                        }
+                        List<CategoryModel> tempChild = [];
+                        for (CategoryModel cc in childCategory) {
+                          if (cc.parent == parentCategory[index].id) tempChild.add(cc);
+                        }
+                        return CategoryBlock(
+                          childrenCat: tempChild,
+                          parent: parentCategory[index],
                         );
-                      }
-                      List<CategoryModel> tempChild = [];
-                      for (CategoryModel cc in childCategory) {
-                        if (cc.parent == parentCategory[index].id) tempChild.add(cc);
-                      }
-                      return CategoryBlock(
-                        childrenCat: tempChild,
-                        parent: parentCategory[index],
-                      );
-                    },
+                      },
+                    ),
+            ),
+            isProductLoading ? CupertinoActivityIndicator() : buildProducts(),
+            Padding(
+              padding: const EdgeInsets.only(top: 10, left: 20),
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 15),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Expanded(
+                      child: Text(
+                        "Services Near You",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    stops: [0.015, 0.015],
+                    colors: [Color.fromRGBO(209, 2, 99, 1), Colors.white],
                   ),
-          ),
-
-
-          isProductLoading? CupertinoActivityIndicator()
-              : buildProducts()
-
-        ],
+                ),
+              ),
+            ),
+            isProductLoading ? CupertinoActivityIndicator() : Container(
+              height: 250,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                physics: BouncingScrollPhysics(),
+                itemCount: serviceListFixed.length,
+                itemBuilder: (_, index) {
+                  String id = serviceListFixed[index]['id'];
+                  String title = serviceListFixed[index]['title'];
+                  String url = serviceListFixed[index]['url'];
+                  return ServiceBlock(id: id, title: title, url: url);
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget buildProducts(){
+  Widget buildProducts() {
+
+
     return ListView.builder(
       itemCount: headings.length,
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
-      itemBuilder: (_, index){
-        if(allList[index].length<=0){
+      itemBuilder: (_, index) {
+        if (allList[index].length <= 0) {
           return Container();
         }
         return ListView(
@@ -342,7 +432,7 @@ class _HomeFragmentState extends State<HomeFragment> {
                       ),
                     ),
                     InkWell(
-                      onTap: (){},
+                      onTap: () {},
                       child: Padding(
                         padding: const EdgeInsets.all(4.0),
                         child: Text(
@@ -360,48 +450,46 @@ class _HomeFragmentState extends State<HomeFragment> {
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     stops: [0.015, 0.015],
-                    colors: [
-                      Color.fromRGBO(209, 2, 99, 1),
-                      Colors.white
-                    ],
+                    colors: [Color.fromRGBO(209, 2, 99, 1), Colors.white],
                   ),
                 ),
               ),
             ),
-            index == 1 ?Container(
-              height: 250*3.0,
-              child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 0.8
-                ),
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: allList[index].length < 7 ? allList[index].length : 6,
-                itemBuilder: (_c, i){
-                  return AdViewBlock(
-                    ad: allList[index][i],
-                    type: headings[index],
-                  );
-                },
-              ),
-            ) : Container(
-              height: 250,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                physics: BouncingScrollPhysics(),
-                itemCount: allList[index].length < 16 ? allList[index].length : 15,
-                itemBuilder: (_c, i){
-                  return AdViewBlock(
-                      ad: allList[index][i],
-                    type: headings[index],
-                  );
-                },
-              ),
-            ),
+            index == 1
+                ? Container(
+                    height: 250 * 3.0,
+                    child: GridView.builder(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, childAspectRatio: 0.8),
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: allList[index].length < 7 ? allList[index].length : 6,
+                      itemBuilder: (_c, i) {
+
+                        return AdViewBlock(
+                          ad: allList[index][i],
+                          type: headings[index],
+                          isFav: fav.isFavorite(allList[index][i]),
+                        );
+                      },
+                    ),
+                  )
+                : Container(
+                    height: 250,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      physics: BouncingScrollPhysics(),
+                      itemCount: allList[index].length < 16 ? allList[index].length : 15,
+                      itemBuilder: (_c, i) {
+                        return AdViewBlock(
+                          ad: allList[index][i],
+                          type: headings[index],
+                          isFav: fav.isFavorite(allList[index][i]),
+                        );
+                      },
+                    ),
+                  ),
           ],
         );
       },
     );
   }
-
 }

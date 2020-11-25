@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:purana_bazzar/fragments/ads/favourite_ads.dart';
-import 'package:purana_bazzar/fragments/ads/posted_ads.dart';
-import 'package:purana_bazzar/utils/constants.dart';
+import '../fragments/ads/favourite_ads.dart';
+import '../fragments/ads/posted_ads.dart';
+import '../utils/constants.dart';
 
 class MyAdsFragment extends StatefulWidget {
   @override

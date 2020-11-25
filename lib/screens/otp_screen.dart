@@ -5,12 +5,12 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:loading_overlay/loading_overlay.dart';
-import 'package:purana_bazzar/firebase_helper/firebase_login.dart';
-import 'package:purana_bazzar/firebase_helper/firebase_operations.dart';
-import 'package:purana_bazzar/helper/helper.dart';
-import 'package:purana_bazzar/screens/home_screen.dart';
-import 'package:purana_bazzar/screens/signup_screen.dart';
-import 'package:purana_bazzar/utils/constants.dart';
+import '../firebase_helper/firebase_login.dart';
+import '../firebase_helper/firebase_operations.dart';
+import '../helper/helper.dart';
+import '../screens/home_screen.dart';
+import '../screens/signup_screen.dart';
+import '../utils/constants.dart';
 
 import 'my_current_location_screen.dart';
 

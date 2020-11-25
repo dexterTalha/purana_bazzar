@@ -18,6 +18,82 @@ final TextStyle googleBtnTextStyle = GoogleFonts.mavenPro(
   fontWeight: FontWeight.bold,
 );
 
+final TextStyle googleBtnRegularTextStyle = TextStyle(
+  color: Colors.black,
+  fontFamily: "MavenReg",
+  fontSize: 18,
+);
+final List<String> fuelType = [
+  "CNG & Hybrid",
+  "Diesel",
+  "Electronic",
+  "LPG",
+  "Petrol"
+];
+final List<String> propertyType = [
+  "For Rent",
+  "For Sale"
+
+];
+final List<String> listedBy = [
+  "Dealer",
+  "Owner",
+  "Builder"
+];
+
+final List<String> furnishList = [
+  "Furnished",
+  "Semi-Furnished",
+  "Unfurnished"
+];
+final List<Map<String, dynamic>> serviceListFixed = [{
+  "id" : "26",
+  "title": "Classes and Education",
+  "url":"http://pb.loftyinterior.com/slider/teacher.png"
+},
+  {
+    "id" : "27",
+    "title": "Drivers & Cab",
+    "url":"http://pb.loftyinterior.com/slider/bussinessman15-17.png"
+  },
+  {
+    "id" : "28",
+    "title": "Health & beauty",
+    "url":"http://pb.loftyinterior.com/slider/beauty.png"
+  },
+  {
+    "id" : "29",
+    "title": "Home Appliances Repairing",
+    "url":"http://pb.loftyinterior.com/slider/electrical_issues.png"
+  },
+
+  {
+    "id" : "90",
+    "title": "Electrician",
+    "url":"http://pb.loftyinterior.com/slider/full_maintenance.png"
+  },
+  {
+    "id" : "91",
+    "title": "Plumber",
+    "url":"http://pb.loftyinterior.com/slider/plumbing_issues.png"
+  },
+  {
+    "id" : "92",
+    "title": "Cleaning",
+    "url":"http://pb.loftyinterior.com/slider/cleaning_issues.png"
+  },
+  {
+    "id" : "93",
+    "title": "Laundry Services",
+    "url":"http://pb.loftyinterior.com/slider/laundry_services.png"
+  },
+  {
+    "id" : "94",
+    "title": "Painting",
+    "url":"http://pb.loftyinterior.com/slider/painting.png"
+  }
+];
+
 Map<int, Color> color = {
   50: Color(0x44647CA3),
   100: Color(0x55647CA3),

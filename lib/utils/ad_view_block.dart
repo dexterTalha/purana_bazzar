@@ -3,20 +3,25 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:like_button/like_button.dart';
-import 'package:purana_bazzar/models/ad_model.dart';
-import 'package:purana_bazzar/screens/product_detail_screen.dart';
-import 'package:purana_bazzar/utils/constants.dart';
+import '../helper/favourites_helper.dart';
+import '../models/ad_model.dart';
+import '../screens/product_detail_screen.dart';
+import '../utils/constants.dart';
 import 'package:shimmer/shimmer.dart';
 
 class AdViewBlock extends StatelessWidget {
   final AdModel ad;
   final bool isMyAdd;
   final String type;
+  final bool isFav;
 
-  AdViewBlock({this.ad, this.isMyAdd = false, this.type});
+  AdViewBlock({this.ad, this.isMyAdd = false, this.type, this.isFav = false});
+
+  final AdsFavorites fav = AdsFavorites();
 
   @override
   Widget build(BuildContext context) {
+
     return GestureDetector(
       onTap: () {
         //print(type+ad.id);
@@ -24,7 +29,7 @@ class AdViewBlock extends StatelessWidget {
           context,
           CupertinoPageRoute(
             builder: (_) => ProductDetailScreen(
-              id: ad.id,
+              ad: ad,
               type: type,
             ),
           ),
@@ -76,29 +81,36 @@ class AdViewBlock extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 10),
                       child: Text(
                         "\u20B9 ${ad.price}",
-                        style: googleBtnTextStyle.copyWith(fontSize: 13),
+                        style: googleBtnRegularTextStyle.copyWith(fontSize: 13),
                       ),
                     ),
                     SizedBox(
                       height: 5,
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.pin_drop,
-                            color: googleTextColor,
-                            size: 15,
-                          ),
-                          SizedBox(
-                            width: 5,
-                          ),
-                          Text(
-                            ad.address,
-                            style: googleBtnTextStyle.copyWith(fontSize: 13),
-                          )
-                        ],
+                    Container(
+                      width: 180,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.pin_drop,
+                              color: googleTextColor,
+                              size: 15,
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Expanded(
+                              child: Text(
+                                ad.address,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: googleBtnRegularTextStyle.copyWith(fontSize: 13),
+                              ),
+                            )
+                          ],
+                        ),
                       ),
                     ),
                     !isMyAdd
@@ -183,7 +195,7 @@ class AdViewBlock extends StatelessWidget {
               Positioned(
                 top: 10,
                 right: 10,
-                left: 10,
+                left: 5,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -204,8 +216,15 @@ class AdViewBlock extends StatelessWidget {
                          ),
                        ),
                      ):Container(),
+                    //ad.isPrime? Lottie.asset("assets/lottie/premium.json", height: 40, width: 60) : Container(),
                     LikeButton(
+                      isLiked: isFav,
                       animationDuration: Duration(milliseconds: 600),
+                      onTap: (t) async{
+                        
+                        !t? fav.addFavorite(ad) : fav.removeFavorite(ad);
+                        return !t;
+                      },
                       likeBuilder: (bool isLiked) {
                         return Icon(
                           Icons.favorite,

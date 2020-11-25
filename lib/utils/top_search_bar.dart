@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:purana_bazzar/utils/constants.dart';
+import '../utils/constants.dart';
 
 class TopSearchBar extends StatelessWidget {
 
@@ -16,7 +16,7 @@ class TopSearchBar extends StatelessWidget {
       child: Container(
         height: 60,
         width: size.width,
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        padding: const EdgeInsets.only(top: 10, right: 5, left: 10, bottom: 10),
         decoration: BoxDecoration(color: mPrimaryColor),
         child: Container(
           height: double.infinity,

@@ -4,14 +4,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:purana_bazzar/firebase_helper/firebase_login.dart';
-import 'package:purana_bazzar/helper/dark_theme_provider.dart';
-import 'package:purana_bazzar/helper/shared_pref.dart';
-import 'package:purana_bazzar/screens/home_screen.dart';
-import 'package:purana_bazzar/screens/login_screen.dart';
-import 'package:purana_bazzar/screens/walkthrough_screen.dart';
-import 'package:purana_bazzar/utils/fancy_background_app.dart';
-import 'package:purana_bazzar/utils/constants.dart';
+import '../firebase_helper/firebase_login.dart';
+import '../helper/dark_theme_provider.dart';
+import '../helper/shared_pref.dart';
+import '../screens/home_screen.dart';
+import '../screens/login_screen.dart';
+import '../screens/walkthrough_screen.dart';
+import '../utils/fancy_background_app.dart';
+import '../utils/constants.dart';
 
 class SplashScreen extends StatefulWidget {
   @override

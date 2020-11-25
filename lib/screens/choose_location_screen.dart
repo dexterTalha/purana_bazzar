@@ -49,7 +49,6 @@ class _ChooseLocationScreenState extends State<ChooseLocationScreen> {
   void _listenForPermissionStatus() async {
     final status = await _permission.status;
     setState(() => _permissionStatus = status);
-
   }
 
 

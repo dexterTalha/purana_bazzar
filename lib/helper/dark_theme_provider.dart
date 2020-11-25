@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:purana_bazzar/helper/shared_pref.dart';
-import 'package:purana_bazzar/helper/shared_pref.dart';
+import '../helper/shared_pref.dart';
+import '../helper/shared_pref.dart';
 
 class DarkThemeProvider with ChangeNotifier {
   SharedPref darkThemePreference = SharedPref();
