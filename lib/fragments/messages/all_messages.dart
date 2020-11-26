@@ -25,8 +25,6 @@ class _AllMessagesFragmentState extends State<AllMessagesFragment> with Automati
     super.initState();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -36,65 +34,60 @@ class _AllMessagesFragmentState extends State<AllMessagesFragment> with Automati
       height: size.height,
       padding: const EdgeInsets.only(top: 10),
       child: StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance.collection("Users").doc(user.uid).collection("ChatList").orderBy("timestamp", descending: true).snapshots(),
-          builder: (context, snapshot) {
-            messageList = [];
-            tempMessage = [];
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(mPrimaryDarkColor),
-                ),
-              );
-            }
-            if (snapshot.data.size<=0) {
-              return Center(
-                child: Text(
-                  "No Chats",
-                  style: googleBtnTextStyle,
-                ),
-              );
-            }
-
-            return ListView.separated(
-              itemCount: snapshot.data.docs.length,
-              separatorBuilder: (context, index) => Divider(thickness: 0.5),
-              itemBuilder: (_, index) {
-                final f = snapshot.data.docs[index];
-                final o = snapshot.data.docs[index].get("chatting");
-                final b = snapshot.data.docs[index].get("isseen");
-                MessageModel m = MessageModel(
-                    posting: f.get("posting"),
-                    adTitle: f.get("adtitle"),
-                    adId: f.get("adid"),
-                    adImage: f.get("adimage"),
-                    adPrice: f.get("adprice"),
-                    timeStamp: f.get("timestamp")
-                );
-
-                return Slidable(
-                  actionPane: SlidableDrawerActionPane(),
-                  closeOnScroll: true,
-                  secondaryActions: [
-                    IconSlideAction(
-                      closeOnTap: true,
-                      caption: 'Delete',
-                      color: Colors.red,
-                      icon: Icons.delete_outline,
-                      onTap: () {
-                        Fluttertoast.showToast(msg: "Delete");
-                      },
-                    ),
-                  ],
-                  child: MessageBlock(
-                    model: m,
-                    otherId: o,
-                    isseen: b??true,
-                  ),
-                );
-              },
+        stream: FirebaseFirestore.instance.collection("Users").doc(user.uid).collection("ChatList").orderBy("timestamp", descending: true).snapshots(),
+        builder: (context, snapshot) {
+          messageList = [];
+          tempMessage = [];
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(mPrimaryDarkColor),
+              ),
             );
-          }),
+          }
+          if (snapshot.data.size <= 0) {
+            return Center(
+              child: Text(
+                "No Chats",
+                style: googleBtnTextStyle,
+              ),
+            );
+          }
+
+          return ListView.separated(
+            itemCount: snapshot.data.docs.length,
+            separatorBuilder: (context, index) => Divider(thickness: 0.5),
+            itemBuilder: (_, index) {
+              final f = snapshot.data.docs[index];
+              final o = snapshot.data.docs[index].get("chatting");
+              final b = snapshot.data.docs[index].get("isseen");
+              MessageModel m =
+                  MessageModel(posting: f.get("posting"), adTitle: f.get("adtitle"), adId: f.get("adid"), adImage: f.get("adimage"), adPrice: f.get("adprice"), timeStamp: f.get("timestamp"));
+
+              return Slidable(
+                actionPane: SlidableDrawerActionPane(),
+                closeOnScroll: true,
+                secondaryActions: [
+                  IconSlideAction(
+                    closeOnTap: true,
+                    caption: 'Delete',
+                    color: Colors.red,
+                    icon: Icons.delete_outline,
+                    onTap: () {
+                      Fluttertoast.showToast(msg: "Delete");
+                    },
+                  ),
+                ],
+                child: MessageBlock(
+                  model: m,
+                  otherId: o,
+                  isseen: b ?? true,
+                ),
+              );
+            },
+          );
+        },
+      ),
     );
   }
 

@@ -31,9 +31,6 @@ class _MessageBlockState extends State<MessageBlock> {
     super.initState();
     String otheruid = widget.otherId;
     d = FirebaseFirestore.instance.collection("Users").doc(otheruid).get().then((value) => FirebaseUserModel.fromSnapshot(value));
-    /*if(user.uid == widget.model.receiver){
-      isseen = widget.model.isSeen;
-    }*/
   }
 
   @override
@@ -41,87 +38,91 @@ class _MessageBlockState extends State<MessageBlock> {
     final size = MediaQuery.of(context).size;
 
     return FutureBuilder<FirebaseUserModel>(
-      future: d,
-      builder: (context, snapshot) {
-        return Padding(
-          padding: const EdgeInsets.only(left: 20.0, right: 20, ),
-          child: Container(
-            width: size.width,
-            height: 70,
-            child: InkWell(
-              onTap: () {
-                Navigator.push(
-                    context, CupertinoPageRoute(builder: (_) => ChatScreen(
-                  chatUser: snapshot.data,
-                  messageModel: widget.model,
-                )));
-              },
-              child: Row(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Container(
-                    height: 70,
-                    width: 70,
-                    padding: const EdgeInsets.all(2),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50)),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(50),
-                      child: CachedNetworkImage(
-                        imageUrl:
-                            widget.model.adImage,
-                        fit: BoxFit.fill,
+        future: d,
+        builder: (context, snapshot) {
+          return Padding(
+            padding: const EdgeInsets.only(left: 20.0, right: 20, ),
+            child: Container(
+              width: size.width,
+              height: 70,
+              child: InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    CupertinoPageRoute(
+                      builder: (_) => ChatScreen(
+                        chatUser: snapshot.data,
+                        messageModel: widget.model,
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Expanded(
-                    child: Container(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Text(
-                            snapshot.connectionState == ConnectionState.waiting?"Loading":snapshot.data.name,
-                            style: googleBtnTextStyle.copyWith(fontSize: 16),
-                          ),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          Text(
-                            widget.model.adTitle,
-                            style: googleBtnTextStyle.copyWith(fontSize: 14),
-                          ),
-                          SizedBox(
-                            height: 3,
-                          ),
-                          Text(
-                            "\u20B9 ${widget.model.adPrice}",
-                            style: googleBtnTextStyle.copyWith(fontSize: 14),
-                          ),
-                        ],
+                  );
+                },
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Container(
+                      height: 70,
+                      width: 70,
+                      padding: const EdgeInsets.all(2),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(50)),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(50),
+                        child: CachedNetworkImage(
+                          imageUrl:
+                          widget.model.adImage,
+                          fit: BoxFit.fill,
+                        ),
                       ),
                     ),
-                  ),
-                  
-                  !widget.isseen?Container(
-                    height: 15,
-                    width: 15,
-                    decoration: BoxDecoration(
-                      color: mPrimaryDarkColor,
-                      borderRadius: BorderRadius.circular(10)
+                    SizedBox(
+                      width: 10,
                     ),
-                  ):Container(),
-                ],
+                    Expanded(
+                      child: Container(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Text(
+                              snapshot.connectionState == ConnectionState.waiting?"Loading":snapshot.data.name,
+                              style: googleBtnTextStyle.copyWith(fontSize: 16),
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            Text(
+                              widget.model.adTitle,
+                              style: googleBtnTextStyle.copyWith(fontSize: 14),
+                            ),
+                            SizedBox(
+                              height: 3,
+                            ),
+                            Text(
+                              "\u20B9 ${widget.model.adPrice}",
+                              style: googleBtnTextStyle.copyWith(fontSize: 14),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    !widget.isseen?Container(
+                      height: 15,
+                      width: 15,
+                      decoration: BoxDecoration(
+                          color: mPrimaryDarkColor,
+                          borderRadius: BorderRadius.circular(10)
+                      ),
+                    ):Container(),
+                  ],
+                ),
               ),
             ),
-          ),
-        );
-      }
+          );
+        }
     );
   }
 }

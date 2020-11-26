@@ -107,8 +107,7 @@ class _OtpScreenState extends State<OtpScreen> {
 
   // Example code of how to sign in with phone.
   void _signInWithPhoneNumber({AuthCredential credential}) async {
-    bool isOld = false;
-    print(smsCode);
+
     setState(() {
       isLoading = true;
     });
@@ -123,8 +122,15 @@ class _OtpScreenState extends State<OtpScreen> {
     }
 
     Fluttertoast.showToast(msg: "Verification in progress...");
+
+      UserCredential _results = await _auth.signInWithCredential(authCredential).catchError((onError){
+        Fluttertoast.showToast(msg: "Invalid OTP");
+        setState(() {
+          isLoading = false;
+        });
+        return;
+      });
     try {
-      UserCredential _results = await _auth.signInWithCredential(authCredential);
       User user = _results.user;
 
       setState(() {
@@ -137,7 +143,8 @@ class _OtpScreenState extends State<OtpScreen> {
       Fluttertoast.showToast(msg: _message);
       if (user != null)
         matchOtp(user);
-    }on PlatformException catch(e){
+    }catch(e){
+
       setState(() {
         isLoading = false;
       });
@@ -600,9 +607,18 @@ class _OtpScreenState extends State<OtpScreen> {
             IconButton(
               icon: Icon(Icons.check),
               onPressed: () {
-                SchedulerBinding.instance.addPostFrameCallback((_) {
+                SchedulerBinding.instance.addPostFrameCallback((_) async{
                   //Navigator.of(context).pop();
-                  FirebaseLogin().onAuthStateChanged(context, firebaseUser: user);
+                  bool isOld = await FirebaseCheck.checkOldUser(uid: user.uid);
+                  if(isOld){
+                    bool isLocation = await FirebaseCheck.checkLocation(uid: user.uid);
+                    if(!isLocation)
+                      Navigator.pushReplacement(context, CupertinoPageRoute(builder: (_)=> MyCurrentLocationScreen()));
+                    else
+                      Navigator.pushReplacement(context, CupertinoPageRoute(builder: (_)=> HomeScreen()));
+                  }else {
+                    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_)=> SignUpScreen(isGoogle: false,)), (b) => false);
+                  }
                 });
               },
             )
