@@ -1,4 +1,4 @@
-package com.cyl18f.purana_bazzar
+package com.cyl18f.myolx
 
 import io.flutter.embedding.android.FlutterActivity
 

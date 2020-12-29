@@ -46,6 +46,7 @@ dependencies:
   intl: ^0.16.1
   firebase_messaging: ^7.0.3
   flutter_local_notifications: ^3.0.1+5
+  android_intent: ^0.3.7+7
 
 
 dev_dependencies:

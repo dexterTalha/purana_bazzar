@@ -46,7 +46,7 @@ class _ProfileFragmentState extends State<ProfileFragment> {
           width: size.width,
           height: size.height,
           child: ListView(
-            physics: NeverScrollableScrollPhysics(),
+            physics: BouncingScrollPhysics(),
             children: [
               buildImage(size, snapshot.data.image),
               SizedBox(height: 15),

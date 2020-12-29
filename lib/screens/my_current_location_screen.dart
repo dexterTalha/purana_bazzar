@@ -1,3 +1,4 @@
+import 'package:android_intent/android_intent.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -18,8 +19,7 @@ import 'home_screen.dart';
 
 class MyCurrentLocationScreen extends StatefulWidget {
   @override
-  _MyCurrentLocationScreenState createState() =>
-      _MyCurrentLocationScreenState();
+  _MyCurrentLocationScreenState createState() => _MyCurrentLocationScreenState();
 }
 
 class _MyCurrentLocationScreenState extends State<MyCurrentLocationScreen> {
@@ -36,6 +36,35 @@ class _MyCurrentLocationScreenState extends State<MyCurrentLocationScreen> {
     }
   }
 
+  Future<bool> checkGps() async {
+    if (!(await Geolocator().isLocationServiceEnabled())) {
+      if (Theme.of(context).platform == TargetPlatform.android) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("GPS disabled"),
+              content: const Text('Please make sure you enable GPS and try again'),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text('Ok'),
+                  onPressed: () {
+                    final AndroidIntent intent = AndroidIntent(action: 'android.settings.LOCATION_SOURCE_SETTINGS');
+
+                    intent.launch();
+                    Navigator.of(context, rootNavigator: true).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      }
+      return Future.value(false);
+    }
+    return Future.value(true);
+  }
+
   @override
   void initState() {
     _listenForPermissionStatus();
@@ -47,8 +76,9 @@ class _MyCurrentLocationScreenState extends State<MyCurrentLocationScreen> {
           builder: (_) => LoginScreen(),
         ),
       );
-    }else{
+    } else {
       user = u;
+      checkGps();
     }
     super.initState();
   }
@@ -60,28 +90,31 @@ class _MyCurrentLocationScreenState extends State<MyCurrentLocationScreen> {
 
   _getLocation() async {
     await _getGpsSettings();
+    bool s = await checkGps();
+    if(!s){
+      Fluttertoast.showToast(msg: "Please enable GPS to proceed");
+      return;
+    }
     setState(() {
       _isLoading = true;
     });
 
     Geolocator _locator = Geolocator();
-    Position pos = await _locator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.best);
+    Position pos = await _locator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
     final lat = pos.latitude;
     final lng = pos.longitude;
     await SharedPref().createLocationData(lat, lng);
     String street, area, pincode, city, state;
     final coordinates = Coordinates(lat, lng);
-    var address = await Geocoder.local.findAddressesFromCoordinates(
-        coordinates);
+    var address = await Geocoder.local.findAddressesFromCoordinates(coordinates);
     street = address.first.featureName;
     area = address.first.subLocality;
     pincode = address.first.postalCode;
     city = address.first.subAdminArea;
     state = address.first.adminArea;
     Map<String, dynamic> map = {
-      'address' : "$street, $area, $city, $pincode, $state",
-      'location' : "${pos.latitude},${pos.longitude}",
+      'address': "$street, $area, $city, $pincode, $state",
+      'location': "${pos.latitude},${pos.longitude}",
     };
     bool st = await FirebaseCheck.updateLocation(map: map, uid: user.uid);
 
@@ -98,7 +131,6 @@ class _MyCurrentLocationScreenState extends State<MyCurrentLocationScreen> {
     } else {
       Fluttertoast.showToast(msg: "Error! Please try again");
     }
-
   }
 
   Future<void> requestPermission(Permission permission) async {
@@ -107,7 +139,7 @@ class _MyCurrentLocationScreenState extends State<MyCurrentLocationScreen> {
     setState(() {
       print(status);
       _permissionStatus = status;
-      print(_permissionStatus);
+      //print(_permissionStatus);
     });
   }
 
@@ -121,8 +153,7 @@ class _MyCurrentLocationScreenState extends State<MyCurrentLocationScreen> {
         isLoading: _isLoading,
         color: mPrimaryColor,
         child: Container(
-          padding:
-              const EdgeInsets.only(right: 20, left: 20, bottom: 20, top: 20),
+          padding: const EdgeInsets.only(right: 20, left: 20, bottom: 20, top: 20),
           height: size.height,
           width: size.width,
           child: Column(
@@ -164,9 +195,10 @@ class _MyCurrentLocationScreenState extends State<MyCurrentLocationScreen> {
                               child: Text(
                                 "Enable Location",
                                 style: googleBtnTextStyle.copyWith(
-                                    fontSize: 28,
-                                    color: Colors.black54,
-                                    fontWeight: FontWeight.bold,),
+                                  fontSize: 28,
+                                  color: Colors.black54,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           )
@@ -181,13 +213,12 @@ class _MyCurrentLocationScreenState extends State<MyCurrentLocationScreen> {
                             child: Align(
                               alignment: Alignment.topCenter,
                               child: Text(
-                                !_isCollapsed
-                                    ? "You'll need to enable your\nlocation in order to use iKart"
-                                    : "",
+                                !_isCollapsed ? "You'll need to enable your\nlocation in order to use iKart" : "",
                                 textAlign: TextAlign.center,
                                 style: googleBtnTextStyle.copyWith(
-                                    fontSize: !_isCollapsed ? 16 : 0,
-                                    color: Colors.grey,),
+                                  fontSize: !_isCollapsed ? 16 : 0,
+                                  color: Colors.grey,
+                                ),
                               ),
                             ),
                           )
@@ -242,7 +273,9 @@ class _MyCurrentLocationScreenState extends State<MyCurrentLocationScreen> {
                         "ALLOW LOCATION",
                         textAlign: TextAlign.center,
                         style: googleBtnTextStyle.copyWith(
-                            color: Colors.white, fontSize: 16,),
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
                       ),
                     ),
                   ),
@@ -264,10 +297,7 @@ class _MyCurrentLocationScreenState extends State<MyCurrentLocationScreen> {
                           Text(
                             "TELL ME MORE ",
                             textAlign: TextAlign.center,
-                            style: googleBtnTextStyle.copyWith(
-                                fontSize: 16,
-                                color: Colors.grey,
-                                fontWeight: FontWeight.bold),
+                            style: googleBtnTextStyle.copyWith(fontSize: 16, color: Colors.grey, fontWeight: FontWeight.bold),
                           ),
                           Icon(
                             Icons.keyboard_arrow_down,
@@ -291,9 +321,10 @@ class _MyCurrentLocationScreenState extends State<MyCurrentLocationScreen> {
                                   "Get Your City Services",
                                   textAlign: TextAlign.center,
                                   style: googleBtnTextStyle.copyWith(
-                                      fontSize: 28,
-                                      color: Colors.black54,
-                                      fontWeight: FontWeight.bold,),
+                                    fontSize: 28,
+                                    color: Colors.black54,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                             )
@@ -308,12 +339,12 @@ class _MyCurrentLocationScreenState extends State<MyCurrentLocationScreen> {
                               child: Align(
                                 alignment: Alignment.topCenter,
                                 child: Text(
-                                  _isCollapsed
-                                      ? "We'll be using your location to\nget the available services nearby"
-                                      : "",
+                                  _isCollapsed ? "We'll be using your location to\nget the available services nearby" : "",
                                   textAlign: TextAlign.center,
                                   style: googleBtnTextStyle.copyWith(
-                                      fontSize: 16, color: Colors.grey,),
+                                    fontSize: 16,
+                                    color: Colors.grey,
+                                  ),
                                 ),
                               ),
                             )

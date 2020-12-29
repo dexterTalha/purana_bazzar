@@ -97,99 +97,98 @@ class _SignUpScreenState extends State<SignUpScreen> with SingleTickerProviderSt
     return WillPopScope(
       onWillPop: ()=> HelperClass.buildDiscardDialog(context),
       child: Scaffold(
-        resizeToAvoidBottomPadding: false,
         backgroundColor: Colors.white,
-        body: Container(
-          width: size.width,
-          height: size.height,
-          child: Stack(
-            overflow: Overflow.clip,
-            children: [
-              Positioned(
-                top: -size.width * 0.40,
-                left: -size.width * 0.40,
-                child: ScaleTransition(
-                  scale: _animation,
-                  child: Container(
-                    height: size.width * 0.8,
-                    width: size.width * 0.8,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(size.width * 0.5),
-                      gradient: RadialGradient(
-                        colors: [
-                          mPrimaryDarkColor.withOpacity(0.8),
-                          mPrimaryDarkColor.withOpacity(0.6),
-                          mPrimaryColor.withOpacity(0.8),
-                          mPrimaryColor.withOpacity(0.6),
-                        ],
-                      ),
+        body: Stack(
+          overflow: Overflow.clip,
+          children: [
+            Positioned(
+              top: -size.width * 0.40,
+              left: -size.width * 0.40,
+              child: ScaleTransition(
+                scale: _animation,
+                child: Container(
+                  height: size.width * 0.8,
+                  width: size.width * 0.8,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(size.width * 0.5),
+                    gradient: RadialGradient(
+                      colors: [
+                        mPrimaryDarkColor.withOpacity(0.8),
+                        mPrimaryDarkColor.withOpacity(0.6),
+                        mPrimaryColor.withOpacity(0.8),
+                        mPrimaryColor.withOpacity(0.6),
+                      ],
                     ),
                   ),
                 ),
               ),
-              Positioned(
-                top: 100,
-                right: 20,
-                child: ScaleTransition(
-                  scale: _animation,
-                  child: Container(
-                    height: 50,
-                    width: 50,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(size.width * 0.5),
-                      gradient: RadialGradient(
-                        colors: [
-                          mPrimaryDarkColor.withOpacity(0.8),
-                          mPrimaryColor.withOpacity(0.6),
-                        ],
-                      ),
+            ),
+            Positioned(
+              top: 100,
+              right: 20,
+              child: ScaleTransition(
+                scale: _animation,
+                child: Container(
+                  height: 50,
+                  width: 50,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(size.width * 0.5),
+                    gradient: RadialGradient(
+                      colors: [
+                        mPrimaryDarkColor.withOpacity(0.8),
+                        mPrimaryColor.withOpacity(0.6),
+                      ],
                     ),
                   ),
                 ),
               ),
-              Positioned(
-                bottom: 100,
-                left: 20,
-                child: ScaleTransition(
-                  scale: _animation,
-                  child: Container(
-                    height: 50,
-                    width: 50,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(size.width * 0.5),
-                      gradient: RadialGradient(
-                        colors: [
-                          mPrimaryDarkColor.withOpacity(0.8),
-                          mPrimaryColor.withOpacity(0.6),
-                        ],
-                      ),
+            ),
+            Positioned(
+              bottom: 100,
+              left: 20,
+              child: ScaleTransition(
+                scale: _animation,
+                child: Container(
+                  height: 50,
+                  width: 50,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(size.width * 0.5),
+                    gradient: RadialGradient(
+                      colors: [
+                        mPrimaryDarkColor.withOpacity(0.8),
+                        mPrimaryColor.withOpacity(0.6),
+                      ],
                     ),
                   ),
                 ),
               ),
-              Positioned(
-                bottom: -size.width * 0.40,
-                right: -size.width * 0.40,
-                child:  ScaleTransition(
-                  scale: _animation,
-                  child: Container(
-                    height: size.width * 0.8,
-                    width: size.width * 0.8,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(size.width * 0.5),
-                      gradient: RadialGradient(
-                        colors: [
-                          mPrimaryDarkColor.withOpacity(0.8),
-                          mPrimaryDarkColor.withOpacity(0.6),
-                          mPrimaryColor.withOpacity(0.8),
-                          mPrimaryColor.withOpacity(0.6),
-                        ],
-                      ),
+            ),
+            Positioned(
+              bottom: -size.width * 0.40,
+              right: -size.width * 0.40,
+              child:  ScaleTransition(
+                scale: _animation,
+                child: Container(
+                  height: size.width * 0.8,
+                  width: size.width * 0.8,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(size.width * 0.5),
+                    gradient: RadialGradient(
+                      colors: [
+                        mPrimaryDarkColor.withOpacity(0.8),
+                        mPrimaryDarkColor.withOpacity(0.6),
+                        mPrimaryColor.withOpacity(0.8),
+                        mPrimaryColor.withOpacity(0.6),
+                      ],
                     ),
                   ),
                 ),
               ),
-              Form(
+            ),
+            Container(
+              width: size.width,
+              height: size.height,
+              child: Form(
                 key: _formKey,
                 child: SafeArea(
                   child: SingleChildScrollView(
@@ -369,8 +368,8 @@ class _SignUpScreenState extends State<SignUpScreen> with SingleTickerProviderSt
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

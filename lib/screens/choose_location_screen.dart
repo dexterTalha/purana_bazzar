@@ -1,3 +1,4 @@
+import 'package:android_intent/android_intent.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -31,6 +32,13 @@ class _ChooseLocationScreenState extends State<ChooseLocationScreen> {
   LatLng myLatLng;
   Map<String,Marker> myMarker = {};
 
+
+  @override
+  void initState() {
+    super.initState();
+    _checkGps();
+  }
+
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
     CameraUpdate c = CameraUpdate.newLatLngZoom(widget.latLng, 16);
@@ -45,6 +53,37 @@ class _ChooseLocationScreenState extends State<ChooseLocationScreen> {
     });
   }
 
+  Future _checkGps() async {
+    if (!(await Geolocator().isLocationServiceEnabled())) {
+      if (Theme.of(context).platform == TargetPlatform.android) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("GPS disabled"),
+              content:
+              const Text('Please make sure you enable GPS and try again'),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text('Ok'),
+                  onPressed: () {
+                    final AndroidIntent intent = AndroidIntent(
+                        action: 'android.settings.LOCATION_SOURCE_SETTINGS');
+
+                    intent.launch();
+                    Navigator.of(context, rootNavigator: true).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      }
+      return null;
+    }
+    return true;
+  }
+
 
   void _listenForPermissionStatus() async {
     final status = await _permission.status;
@@ -53,6 +92,11 @@ class _ChooseLocationScreenState extends State<ChooseLocationScreen> {
 
 
   _getLocation(context) async{
+    bool s = await _checkGps() ??  false;
+    if(!s){
+      Fluttertoast.showToast(msg: "Please enable GPS to proceed");
+      return;
+    }
     setState(() {
       isLoading = true;
     });

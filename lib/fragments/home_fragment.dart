@@ -36,11 +36,9 @@ class _HomeFragmentState extends State<HomeFragment> {
   List<List<AdModel>> allList = [];
   final AdsFavorites fav = AdsFavorites();
   List<AdModel> favAds = [];
+  List<AdSliderModel> ads = [];
   final List<String> headings = ["Trending", "All Latest", "Latest Electronics", "Latest Properties"];
-
   RefreshController _refreshController = RefreshController(initialRefresh: false);
-
-
   void _onRefresh() async{
     // monitor network fetch
     await Future.delayed(Duration(milliseconds: 1000));
@@ -117,6 +115,7 @@ class _HomeFragmentState extends State<HomeFragment> {
     }
     for (Map<String, dynamic> map in data['data']) {
       tempList.add(AdModel.fromJson(map));
+      latest.add(AdModel.fromJson(map));
     }
 
     tempList.forEach((element) {
@@ -128,10 +127,12 @@ class _HomeFragmentState extends State<HomeFragment> {
     });
     getRandomElement(tempList);
     allList.add(trending);
-    allList.add(tempList);
+    allList.add(latest);
     allList.add(electronic);
     allList.add(properties);
     allList.add(services);
+
+
 
     if (this.mounted) {
       setState(() {
@@ -141,21 +142,11 @@ class _HomeFragmentState extends State<HomeFragment> {
   }
 
   getRandomElement(List<AdModel> list) {
-
+    list.shuffle();
     list.forEach((element) {
-      final random = new Random();
-      var i = random.nextInt(list.length);
       if (trending.length < (list.length < 10 ? list.length : 10)) {
-        if (trending.length <= 0) {
-          trending.add(list[i]);
-        } else {
-          if (trending.any((element) => element.id != list[i].id)) {
-            trending.add(list[i]);
-
-          }
-        }
-      } else {
-        return;
+        print(element.id);
+        trending.add(element);
       }
     });
   }
@@ -178,7 +169,7 @@ class _HomeFragmentState extends State<HomeFragment> {
       }
     });
   }
-  List<AdSliderModel> ads = [];
+
   Future<void> _getAdSlider() async {
     ads = [];
     final url = "${baseUrl}get_slider.php";
@@ -401,8 +392,6 @@ class _HomeFragmentState extends State<HomeFragment> {
   }
 
   Widget buildProducts() {
-
-
     return ListView.builder(
       itemCount: headings.length,
       shrinkWrap: true,
@@ -463,7 +452,6 @@ class _HomeFragmentState extends State<HomeFragment> {
                       physics: NeverScrollableScrollPhysics(),
                       itemCount: allList[index].length < 7 ? allList[index].length : 6,
                       itemBuilder: (_c, i) {
-
                         return AdViewBlock(
                           ad: allList[index][i],
                           type: headings[index],

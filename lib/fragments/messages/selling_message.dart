@@ -45,6 +45,14 @@ class _SellingMessagesFragmentState extends State<SellingMessagesFragment> with 
                 ),
               );
             }
+            if(snapshot.hasError){
+              return Center(
+                child: Text(
+                  "No Chats",
+                  style: googleBtnTextStyle,
+                ),
+              );
+            }
             if (snapshot.data.size<=0) {
               return Center(
                 child: Text(
