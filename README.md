@@ -10,6 +10,17 @@ Purana Bazzar Flutter application
 - Create cloud firestore database
 - initialize cloud functions for chatting notification support (cloud function code present in cloud_function folder)
 
+#MySQL and API - Things to create api and database
+- Model classes have structure of tables
+- create database and api then replace the "baseUrl" value with your api base url.
+
+#Google Maps
+- Create a google developer console project and enable the maps for api
+- Copy the api key and paste it in the AndroidManifest.xml at line 13
+
+##UPDATE THE PROJECT ACCORDING TO LATEST FLUTTER VERION
+
+
 This project is a starting point for a Flutter application.
 
 A few resources to get you started if this is your first Flutter project:
