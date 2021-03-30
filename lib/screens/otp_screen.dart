@@ -64,25 +64,19 @@ class _OtpScreenState extends State<OtpScreen> {
       _message = '';
       isLoading = true;
     });
-    final PhoneVerificationCompleted verificationCompleted =
-        (AuthCredential phoneAuthCredential) {
-
+    final PhoneVerificationCompleted verificationCompleted = (AuthCredential phoneAuthCredential) {
       _signInWithPhoneNumber(credential: phoneAuthCredential);
-
     };
 
-    final PhoneVerificationFailed verificationFailed =
-        (authException) {
+    final PhoneVerificationFailed verificationFailed = (authException) {
       setState(() {
         isLoading = false;
-        _message =
-        'Phone number verification failed. Code: ${authException.code}. Message: ${authException.message}';
+        _message = 'Phone number verification failed. Code: ${authException.code}. Message: ${authException.message}';
       });
       Fluttertoast.showToast(msg: _message);
     };
 
-    final PhoneCodeSent codeSent =
-        (String verificationId, [int forceResendingToken]) async {
+    final PhoneCodeSent codeSent = (String verificationId, [int forceResendingToken]) async {
       Fluttertoast.showToast(msg: "OTP sent");
       setState(() {
         isLoading = false;
@@ -91,13 +85,12 @@ class _OtpScreenState extends State<OtpScreen> {
       _verificationId = verificationId;
     };
 
-    final PhoneCodeAutoRetrievalTimeout codeAutoRetrievalTimeout =
-        (String verificationId) {
+    final PhoneCodeAutoRetrievalTimeout codeAutoRetrievalTimeout = (String verificationId) {
       _verificationId = verificationId;
     };
 
     await _auth.verifyPhoneNumber(
-        phoneNumber: "+91"+widget.mobile,
+        phoneNumber: "+91" + widget.mobile,
         timeout: const Duration(seconds: 5),
         verificationCompleted: verificationCompleted,
         verificationFailed: verificationFailed,
@@ -107,14 +100,13 @@ class _OtpScreenState extends State<OtpScreen> {
 
   // Example code of how to sign in with phone.
   void _signInWithPhoneNumber({AuthCredential credential}) async {
-
     setState(() {
       isLoading = true;
     });
     AuthCredential authCredential;
-    if(smsCode == null){
+    if (smsCode == null) {
       authCredential = credential;
-    }else{
+    } else {
       authCredential = PhoneAuthProvider.credential(
         verificationId: _verificationId,
         smsCode: this.smsCode,
@@ -123,13 +115,13 @@ class _OtpScreenState extends State<OtpScreen> {
 
     Fluttertoast.showToast(msg: "Verification in progress...");
 
-      UserCredential _results = await _auth.signInWithCredential(authCredential).catchError((onError){
-        Fluttertoast.showToast(msg: "Invalid OTP");
-        setState(() {
-          isLoading = false;
-        });
-        return;
+    UserCredential _results = await _auth.signInWithCredential(authCredential).catchError((onError) {
+      Fluttertoast.showToast(msg: "Invalid OTP");
+      setState(() {
+        isLoading = false;
       });
+      return null;
+    });
     try {
       User user = _results.user;
 
@@ -141,17 +133,13 @@ class _OtpScreenState extends State<OtpScreen> {
         }
       });
       Fluttertoast.showToast(msg: _message);
-      if (user != null)
-        matchOtp(user);
-    }catch(e){
-
+      if (user != null) matchOtp(user);
+    } catch (e) {
       setState(() {
         isLoading = false;
       });
-
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -166,7 +154,10 @@ class _OtpScreenState extends State<OtpScreen> {
         padding: const EdgeInsets.only(right: 2.0, left: 2.0),
         child: Container(
             alignment: Alignment.center,
-            decoration: BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.1), border: Border.all(width: 1.0, color: Color.fromRGBO(0, 0, 0, 0.1)), borderRadius: BorderRadius.circular(4.0)),
+            decoration: BoxDecoration(
+                color: Color.fromRGBO(0, 0, 0, 0.1),
+                border: Border.all(width: 1.0, color: Color.fromRGBO(0, 0, 0, 0.1)),
+                borderRadius: BorderRadius.circular(4.0)),
             child: TextField(
               inputFormatters: [
                 LengthLimitingTextInputFormatter(1),
@@ -182,7 +173,10 @@ class _OtpScreenState extends State<OtpScreen> {
         padding: const EdgeInsets.only(right: 2.0, left: 2.0),
         child: Container(
           alignment: Alignment.center,
-          decoration: BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.1), border: Border.all(width: 1.0, color: Color.fromRGBO(0, 0, 0, 0.1)), borderRadius: BorderRadius.circular(4.0)),
+          decoration: BoxDecoration(
+              color: Color.fromRGBO(0, 0, 0, 0.1),
+              border: Border.all(width: 1.0, color: Color.fromRGBO(0, 0, 0, 0.1)),
+              borderRadius: BorderRadius.circular(4.0)),
           child: TextField(
             inputFormatters: [
               LengthLimitingTextInputFormatter(1),
@@ -200,7 +194,10 @@ class _OtpScreenState extends State<OtpScreen> {
         padding: const EdgeInsets.only(right: 2.0, left: 2.0),
         child: Container(
           alignment: Alignment.center,
-          decoration: BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.1), border: Border.all(width: 1.0, color: Color.fromRGBO(0, 0, 0, 0.1)), borderRadius: BorderRadius.circular(4.0)),
+          decoration: BoxDecoration(
+              color: Color.fromRGBO(0, 0, 0, 0.1),
+              border: Border.all(width: 1.0, color: Color.fromRGBO(0, 0, 0, 0.1)),
+              borderRadius: BorderRadius.circular(4.0)),
           child: TextField(
             inputFormatters: [
               LengthLimitingTextInputFormatter(1),
@@ -218,7 +215,10 @@ class _OtpScreenState extends State<OtpScreen> {
         padding: const EdgeInsets.only(right: 2.0, left: 2.0),
         child: Container(
           alignment: Alignment.center,
-          decoration: BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.1), border: Border.all(width: 1.0, color: Color.fromRGBO(0, 0, 0, 0.1)), borderRadius: BorderRadius.circular(4.0)),
+          decoration: BoxDecoration(
+              color: Color.fromRGBO(0, 0, 0, 0.1),
+              border: Border.all(width: 1.0, color: Color.fromRGBO(0, 0, 0, 0.1)),
+              borderRadius: BorderRadius.circular(4.0)),
           child: TextField(
             inputFormatters: [
               LengthLimitingTextInputFormatter(1),
@@ -235,7 +235,10 @@ class _OtpScreenState extends State<OtpScreen> {
         padding: const EdgeInsets.only(right: 2.0, left: 2.0),
         child: Container(
           alignment: Alignment.center,
-          decoration: BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.1), border: Border.all(width: 1.0, color: Color.fromRGBO(0, 0, 0, 0.1)), borderRadius: BorderRadius.circular(4.0)),
+          decoration: BoxDecoration(
+              color: Color.fromRGBO(0, 0, 0, 0.1),
+              border: Border.all(width: 1.0, color: Color.fromRGBO(0, 0, 0, 0.1)),
+              borderRadius: BorderRadius.circular(4.0)),
           child: TextField(
             inputFormatters: [
               LengthLimitingTextInputFormatter(1),
@@ -252,7 +255,10 @@ class _OtpScreenState extends State<OtpScreen> {
         padding: const EdgeInsets.only(right: 2.0, left: 2.0),
         child: Container(
           alignment: Alignment.center,
-          decoration: BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.1), border: Border.all(width: 1.0, color: Color.fromRGBO(0, 0, 0, 0.1)), borderRadius: BorderRadius.circular(4.0)),
+          decoration: BoxDecoration(
+              color: Color.fromRGBO(0, 0, 0, 0.1),
+              border: Border.all(width: 1.0, color: Color.fromRGBO(0, 0, 0, 0.1)),
+              borderRadius: BorderRadius.circular(4.0)),
           child: TextField(
             inputFormatters: [
               LengthLimitingTextInputFormatter(1),
@@ -274,39 +280,33 @@ class _OtpScreenState extends State<OtpScreen> {
     ];
     final size = MediaQuery.of(context).size;
     return WillPopScope(
-      onWillPop: () =>  HelperClass.buildDiscardDialog(context),
+      onWillPop: () => HelperClass.buildDiscardDialog(context),
       child: LoadingOverlay(
         isLoading: isLoading,
         child: Scaffold(
-          resizeToAvoidBottomPadding: false,
           backgroundColor: Color(0xFFffffff),
           body: Stack(
-            overflow: Overflow.clip,
             children: [
               AnimatedPositioned(
                 duration: Duration(milliseconds: 300),
-                top: - size.height *0.25,
-                left: - size.height *0.25,
+                top: -size.height * 0.25,
+                left: -size.height * 0.25,
                 child: Container(
                   height: size.height * 0.5,
-                  width: size.height *0.5,
-                  decoration: BoxDecoration(
-                      color: mPrimaryColor,
-                      borderRadius: BorderRadius.circular(size.height * 0.25)
-                  ),
+                  width: size.height * 0.5,
+                  decoration:
+                      BoxDecoration(color: mPrimaryColor, borderRadius: BorderRadius.circular(size.height * 0.25)),
                 ),
               ),
               AnimatedPositioned(
                 duration: Duration(milliseconds: 300),
-                top: size.height *0.45,
-                right: - size.height * 0.35,
+                top: size.height * 0.45,
+                right: -size.height * 0.35,
                 child: Container(
                   height: size.height * 0.5,
-                  width: size.height *0.5,
-                  decoration: BoxDecoration(
-                      color: mPrimaryColor,
-                      borderRadius: BorderRadius.circular(size.height * 0.25)
-                  ),
+                  width: size.height * 0.5,
+                  decoration:
+                      BoxDecoration(color: mPrimaryColor, borderRadius: BorderRadius.circular(size.height * 0.25)),
                 ),
               ),
               SafeArea(
@@ -318,7 +318,6 @@ class _OtpScreenState extends State<OtpScreen> {
                         child: Column(
                           mainAxisSize: MainAxisSize.max,
                           mainAxisAlignment: MainAxisAlignment.start,
-
                           children: <Widget>[
                             Align(
                               alignment: Alignment.centerLeft,
@@ -369,15 +368,19 @@ class _OtpScreenState extends State<OtpScreen> {
                         flex: 90,
                       ),
                       Flexible(
-                        child: Column(mainAxisSize: MainAxisSize.max, mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
-                          GridView.count(
-                              crossAxisCount: 8,
-                              mainAxisSpacing: 10.0,
-                              shrinkWrap: true,
-                              primary: false,
-                              scrollDirection: Axis.vertical,
-                              children: List<Container>.generate(8, (int index) => Container(child: widgetList[index]))),
-                        ]),
+                        child: Column(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              GridView.count(
+                                  crossAxisCount: 8,
+                                  mainAxisSpacing: 10.0,
+                                  shrinkWrap: true,
+                                  primary: false,
+                                  scrollDirection: Axis.vertical,
+                                  children:
+                                      List<Container>.generate(8, (int index) => Container(child: widgetList[index]))),
+                            ]),
                         flex: 20,
                       ),
                       Flexible(
@@ -396,19 +399,25 @@ class _OtpScreenState extends State<OtpScreen> {
                                       onPressed: () {
                                         inputTextToField("1");
                                       },
-                                      child: Text("1", style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w400), textAlign: TextAlign.center),
+                                      child: Text("1",
+                                          style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w400),
+                                          textAlign: TextAlign.center),
                                     ),
                                     MaterialButton(
                                       onPressed: () {
                                         inputTextToField("2");
                                       },
-                                      child: Text("2", style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w400), textAlign: TextAlign.center),
+                                      child: Text("2",
+                                          style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w400),
+                                          textAlign: TextAlign.center),
                                     ),
                                     MaterialButton(
                                       onPressed: () {
                                         inputTextToField("3");
                                       },
-                                      child: Text("3", style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w400), textAlign: TextAlign.center),
+                                      child: Text("3",
+                                          style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w400),
+                                          textAlign: TextAlign.center),
                                     ),
                                   ],
                                 ),
@@ -425,19 +434,25 @@ class _OtpScreenState extends State<OtpScreen> {
                                       onPressed: () {
                                         inputTextToField("4");
                                       },
-                                      child: Text("4", style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w400), textAlign: TextAlign.center),
+                                      child: Text("4",
+                                          style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w400),
+                                          textAlign: TextAlign.center),
                                     ),
                                     MaterialButton(
                                       onPressed: () {
                                         inputTextToField("5");
                                       },
-                                      child: Text("5", style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w400), textAlign: TextAlign.center),
+                                      child: Text("5",
+                                          style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w400),
+                                          textAlign: TextAlign.center),
                                     ),
                                     MaterialButton(
                                       onPressed: () {
                                         inputTextToField("6");
                                       },
-                                      child: Text("6", style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w400), textAlign: TextAlign.center),
+                                      child: Text("6",
+                                          style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w400),
+                                          textAlign: TextAlign.center),
                                     ),
                                   ],
                                 ),
@@ -454,19 +469,25 @@ class _OtpScreenState extends State<OtpScreen> {
                                       onPressed: () {
                                         inputTextToField("7");
                                       },
-                                      child: Text("7", style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w400), textAlign: TextAlign.center),
+                                      child: Text("7",
+                                          style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w400),
+                                          textAlign: TextAlign.center),
                                     ),
                                     MaterialButton(
                                       onPressed: () {
                                         inputTextToField("8");
                                       },
-                                      child: Text("8", style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w400), textAlign: TextAlign.center),
+                                      child: Text("8",
+                                          style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w400),
+                                          textAlign: TextAlign.center),
                                     ),
                                     MaterialButton(
                                       onPressed: () {
                                         inputTextToField("9");
                                       },
-                                      child: Text("9", style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w400), textAlign: TextAlign.center),
+                                      child: Text("9",
+                                          style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w400),
+                                          textAlign: TextAlign.center),
                                     ),
                                   ],
                                 ),
@@ -488,27 +509,29 @@ class _OtpScreenState extends State<OtpScreen> {
                                       onPressed: () {
                                         inputTextToField("0");
                                       },
-                                      child: Text("0", style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w400), textAlign: TextAlign.center),
+                                      child: Text("0",
+                                          style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w400),
+                                          textAlign: TextAlign.center),
                                     ),
                                     MaterialButton(
                                         onPressed: () {
-                                          if(isCodeNotSent){
+                                          if (isCodeNotSent) {
                                             Fluttertoast.showToast(msg: "Please wait");
                                             return;
                                           }
 
-                                          smsCode = "${controller1.text}${controller2.text}${controller3.text}${controller4.text}${controller5.text}${controller6.text}";
-                                          if(smsCode.isEmpty){
+                                          smsCode =
+                                              "${controller1.text}${controller2.text}${controller3.text}${controller4.text}${controller5.text}${controller6.text}";
+                                          if (smsCode.isEmpty) {
                                             Fluttertoast.showToast(msg: "Please enter OTP");
                                             return;
                                           }
-                                          if(smsCode.length < 6){
+                                          if (smsCode.length < 6) {
                                             Fluttertoast.showToast(msg: "Please enter valid 6 digit OTP");
                                             return;
                                           }
                                           //setState(() {});
                                           _signInWithPhoneNumber();
-
                                         },
                                         child: Image.asset('assets/png/success.png', width: 25.0, height: 25.0)),
                                   ],
@@ -607,17 +630,23 @@ class _OtpScreenState extends State<OtpScreen> {
             IconButton(
               icon: Icon(Icons.check),
               onPressed: () {
-                SchedulerBinding.instance.addPostFrameCallback((_) async{
+                SchedulerBinding.instance.addPostFrameCallback((_) async {
                   //Navigator.of(context).pop();
                   bool isOld = await FirebaseCheck.checkOldUser(uid: user.uid);
-                  if(isOld){
+                  if (isOld) {
                     bool isLocation = await FirebaseCheck.checkLocation(uid: user.uid);
-                    if(!isLocation)
-                      Navigator.pushReplacement(context, CupertinoPageRoute(builder: (_)=> MyCurrentLocationScreen()));
+                    if (!isLocation)
+                      Navigator.pushReplacement(context, CupertinoPageRoute(builder: (_) => MyCurrentLocationScreen()));
                     else
-                      Navigator.pushReplacement(context, CupertinoPageRoute(builder: (_)=> HomeScreen()));
-                  }else {
-                    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_)=> SignUpScreen(isGoogle: false,)), (b) => false);
+                      Navigator.pushReplacement(context, CupertinoPageRoute(builder: (_) => HomeScreen()));
+                  } else {
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => SignUpScreen(
+                                  isGoogle: false,
+                                )),
+                        (b) => false);
                   }
                 });
               },
