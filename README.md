@@ -8,8 +8,7 @@ Purana Bazzar Flutter application
 - Connect with firebase and place the google_services.json file inside android/app/
 - Enable the Google login, Phone login,
 - Create cloud firestore database
-- initialize cloud functions for chatting notification support
-- 
+- initialize cloud functions for chatting notification support (cloud function code present in cloud_function folder)
 
 This project is a starting point for a Flutter application.
 
