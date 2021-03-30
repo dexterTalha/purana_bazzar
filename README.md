@@ -4,6 +4,13 @@ Purana Bazzar Flutter application
 
 ## Getting Started
 
+#Firebase - Things to do
+- Connect with firebase and place the google_services.json file inside android/app/
+- Enable the Google login, Phone login,
+- Create cloud firestore database
+- initialize cloud functions for chatting notification support
+- 
+
 This project is a starting point for a Flutter application.
 
 A few resources to get you started if this is your first Flutter project:
